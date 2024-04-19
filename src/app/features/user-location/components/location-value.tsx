@@ -30,21 +30,22 @@ export const LocationValue: FC<ILocationValue> = ({ longtitude, latitude, altitu
                 <Flex>
                     <Text fontSize='xs' paddingLeft={2}><T dictKey="latitude" /></Text>
                     <Spacer />
-                    <Text fontSize='xs' color="#495057">{latitude}</Text>
+                    <Text fontSize='xs'>{latitude}</Text>
                 </Flex>
                 <Flex>
                     <Text fontSize='xs' paddingLeft={2} paddingRight={3}><T dictKey="longtitude"/></Text>
                     <Spacer />
-                    <Text fontSize='xs' color="#495057">{longtitude}</Text>
+                    <Text fontSize='xs'>{longtitude}</Text>
                 </Flex>
                 <Flex>
                     <Text fontSize='xs' paddingLeft={2}><T dictKey="altitude"/></Text>
                     <Spacer />
-                    <Text fontSize='xs' color="#495057">{altitude} m</Text>
+                    <Text fontSize='xs'>{altitude} m</Text>
                 </Flex>
-                <Text fontSize='xs'><T dictKey="selectManualy" />{' '} 
-                    <Button sx={{color: 'blue'}}variant='link' onClick={handleLinkClick} size={'xs'}>
-                        <T dictKey="here" />
+                <Text fontSize='xs'>
+                    <T dictKey="selectManualy" />{' '} 
+                    <Button sx={{color: '#be13a3'}}variant='link' onClick={handleLinkClick} size={'xs'}>
+                        <Text as='b'><T dictKey="here" /></Text>
                     </Button>
                 .</Text>
             </Box>
@@ -52,7 +53,7 @@ export const LocationValue: FC<ILocationValue> = ({ longtitude, latitude, altitu
         ) : (
             <Text fontSize='sm'> 
                 <T dictKey="requiresLocation" />{' '} 
-                <Button sx={{color: 'blue'}} variant='link' onClick={handleLinkClick} size={'s'}>
+                <Button sx={{color: '#be13a3'}} variant='link' onClick={handleLinkClick} size={'s'}>
                     <T dictKey="here" />
                 </Button>
                 {' '}<T dictKey="allowLocation" />

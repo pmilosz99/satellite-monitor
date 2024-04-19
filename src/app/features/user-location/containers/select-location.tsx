@@ -23,7 +23,7 @@ import { coordinates } from "../../../shared/atoms";
 const pointStyle = new Style({
     image: new Circle({
       radius: 8,
-      fill: new Fill({color: '#0032d5'}),
+      fill: new Fill({color: '#3185ff'}),
       stroke: new Stroke({
         color: '#fafafd',
         width: 2,
@@ -95,7 +95,6 @@ export const SelectLocation = () => {
             title: <T dictKey="locationSetSucc" />,
             status: 'success',
             position: 'top-right',
-            variant: 'subtle',
             duration: 1500,
         });
     };
@@ -108,7 +107,6 @@ export const SelectLocation = () => {
             title: <T dictKey="locationRemoved" />,
             status: 'warning',
             position: 'top-right',
-            variant: 'subtle',
             duration: 1500,
         })
     }
@@ -122,10 +120,10 @@ export const SelectLocation = () => {
     return (
         <Box p={5} h={'100%'} w={'100%'}>
             <Stack spacing={5} h={'100%'} w={'100%'} direction='row'>
-                <MapComponent id="map-select-location" mapRef={mapRef}/>
-                <Stack h={'100%'} w={'20%'} direction="column">
+                <MapComponent id="map-select-location" mapRef={mapRef} />
+                <Stack h={'100%'} w={'20%'} direction="column" spacing={4}>
                     <Box h={'60%'} borderWidth={1} borderRadius={5}>
-                        <Center bg={'#F8F9FA'}>
+                        <Center>
                             <Text p={1}>
                                 <T dictKey="location" />
                             </Text>
@@ -133,20 +131,28 @@ export const SelectLocation = () => {
                         <Divider />
                         <Box p={2}>
                             <Flex>
-                                <Text fontSize='xs' paddingLeft={2}><T dictKey="latitude" /></Text>
+                                <Text fontSize='xs' pl={2}>
+                                    <T dictKey="latitude" />
+                                </Text>
                                 <Spacer />
-                                <Text fontSize='xs' color="#495057">{displayLatitude}</Text>
+                                <Text fontSize='xs'>{displayLatitude}</Text>
                             </Flex>
                             <Flex>
-                                <Text fontSize='xs' paddingLeft={2} paddingRight={3}><T dictKey="longtitude" /></Text>
+                                <Text fontSize='xs' paddingLeft={2} pr={3}>
+                                    <T dictKey="longtitude" />
+                                </Text>
                                 <Spacer />
-                                <Text fontSize='xs' color="#495057">{displayLongtitude}</Text>
+                                <Text fontSize='xs'>{displayLongtitude}</Text>
                             </Flex>
                         </Box>
                     </Box>
-                    <Button w={'100%'} marginTop={1} variant='solid' onClick={handleSetLocation}><T dictKey="setLocation" /></Button>
-                    <Button w={'100%'} marginTop={1} variant='outline' onClick={handleRemoveLocation}><T dictKey="resetLocation" /></Button>
-                    <Alert status='info' borderRadius={6} bg='#e1f4ff' borderColor='#b9dbff' borderWidth='1px'>
+                    <Button w={'100%'} variant='solid' onClick={handleSetLocation}>
+                        <T dictKey="setLocation" />
+                    </Button>
+                    <Button w={'100%'} variant='outline' onClick={handleRemoveLocation}>
+                        <T dictKey="resetLocation" />
+                    </Button>
+                    <Alert status="info">
                         <AlertIcon />
                         <Text >
                             <T dictKey="locationInfo" />

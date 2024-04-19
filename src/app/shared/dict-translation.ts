@@ -19,7 +19,7 @@ export const dict: TLngDict = {
         futureFeatures: 'Future features',
         map: 'Map',
         map3d: 'Map 3D',
-        developedAndMainted: 'Developed and maintained by Piotr Miłosz',
+        developedAndMainted: 'Developed and maintained by ',
         //home-page
         homePageWelcome: 'Welcome to Satellite Monitor',
         homePageDisc: `The Satellite Monitor is a hobby project to facilitate nighttime satellite observing. 
@@ -30,9 +30,9 @@ export const dict: TLngDict = {
         //user-location
         yourLocation: 'Your location',
         location: 'Location',
-        latitude: 'latitude:',
-        longtitude: 'longtitude:',
-        altitude: 'altitude:',
+        latitude: 'Latitude:',
+        longtitude: 'Longtitude:',
+        altitude: 'Altitude:',
         selectManualy: 'or select manually location',
         here: 'here',
         requiresLocation: 'The application requires a location to function properly. Please select a location by clicking',
@@ -46,8 +46,7 @@ export const dict: TLngDict = {
         youHave: 'You have ',
         turnedOff: 'turned off ',
         automaticLocation: `automatic location sharing. 
-        For all application features to work, you must enable location sharing or manually`,
-        selectHere: 'select here.'
+        For all application features to work, you must enable location sharing or manually select`,
     },
     [LANGUAGE_VALUES.PL]: {
         //layout
@@ -60,10 +59,10 @@ export const dict: TLngDict = {
         futureFeatures: 'Przyszłe funkcje',
         map: 'Mapa',
         map3d: 'Mapa 3D',
-        developedAndMainted: 'Aplikacja stworzona i utrzymywana przez Piotr Miłosz',
+        developedAndMainted: 'Aplikacja stworzona i utrzymywana przez ',
         //home-page
         homePageWelcome: 'Witaj na Satellite Monitor',
-        homePageDisc: `Satellite Monitor jest to hobbistyczny projekt, który umożliwa nocne obserwacje satelitów.
+        homePageDisc: `Satellite Monitor jest to hobbistyczny projekt, który umożliwa planowanie nocnych obserwacji satelitów.
         Ta aplikacja pozwala na przeglądanie baz danych aktywnych satelitów oraz co najważniejsze, przeglądać satelity, które
         akurat przelatują nad naszymi głowami, więc możesz planować nocne obserwacje satelitów. W przyszłości zostaną dodane takie funkcje jak
         mapa wraz z orbitami satelitów a także mapa 3D.`,
@@ -86,7 +85,6 @@ export const dict: TLngDict = {
         youHave: 'Właśnie ',
         turnedOff: 'wyłączyłeś ',
         automaticLocation: `automatyczną lokalizację. 
-        Dla poprawnego działania aplikacji musisz udostępnić lokalizację lub manualnie`,
-        selectHere: 'wybrać tutaj.'
+        Dla poprawnego działania aplikacji musisz udostępnić lokalizację lub manualnie wybrać`,
     }
 }

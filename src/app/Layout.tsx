@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { useAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { 
     Box,
     Button,
@@ -19,7 +19,8 @@ import {
     Spacer, 
     Stack,
     Text,
-    useBoolean
+    useColorMode,
+    chakra,
 } from "@chakra-ui/react";
 import { ChevronDownIcon, MoonIcon, SunIcon } from '@chakra-ui/icons'
 import { Link as RouterLink, Outlet, To } from "react-router-dom";
@@ -27,25 +28,26 @@ import SatelliteAltOutlinedIcon from '@mui/icons-material/SatelliteAltOutlined';
 
 import { LocationDisplay } from "./features/user-location/components";
 
-import { language } from "./shared/atoms";
+import { currentTheme, language } from "./shared/atoms";
 import { LANGUAGE_VALUES } from "./shared/dict-translation";
 import { routes } from "./shared/routes";
 import { T } from "./shared/components";
 
 import { plFlag, gbFlag } from '../assets/icons';
+import { MAIN_GRADIENT, MAIN_GRADIENT_COLOR, THEME_TYPE } from "./shared/themes";
 
 const Logo = () => (
     <RouterLink to="/">
-        <Box paddingLeft={9}>
+        <Box pl={'38px'}>
             <Flex>
-                <Heading color="#212529" size='md'>
+                <Heading size='md'>
                     Satellite
                 </Heading>
                 <Box paddingTop={'3px'} paddingLeft={'5px'}>
                     <SatelliteAltOutlinedIcon sx={{ fontSize: 18 }} />
                 </Box>
             </Flex>
-            <Heading bgGradient='linear(to-l, #7928CA, #FF0080)' bgClip='text' size='md' paddingLeft={6}>
+            <Heading bgGradient={MAIN_GRADIENT} bgClip='text' size='md' paddingLeft={6}>
                 Monitor
             </Heading>
         </Box>
@@ -99,14 +101,25 @@ const LanguageMenu = () => {
 };
 
 const ThemeChanger = () => {
-    const [flag, setFlag] = useBoolean();
-    //TODO finish component
+    const {colorMode, toggleColorMode } = useColorMode();
+    const setTheme = useSetAtom(currentTheme);
+    
+    const handleClik = () => {
+        toggleColorMode();
+        setTheme(colorMode === THEME_TYPE.DARK ? THEME_TYPE.LIGHT : THEME_TYPE.DARK);
+        /**
+         * We have to use both solutions (useColorMode and atom value) 
+         * because useColorMode dont working 
+         * (is undefined in App component)
+         */
+    }
+
     return (
         <IconButton 
                 variant='outline'
                 aria-label="theme-changer"
-                onClick={setFlag.toggle}
-                icon={flag ? <MoonIcon /> : <SunIcon />}
+                onClick={handleClik}
+                icon={colorMode === THEME_TYPE.DARK ? <SunIcon /> : <MoonIcon />}
             />
     )
 }
@@ -122,77 +135,91 @@ const RightComponentsContainer = () => (
 )
 
 const Header = () => (
-    <Flex bg='white' h={'100%'} w='100%' borderBottom='1px' borderColor={'#E9ECEF'} backgroundColor={'#F8F9FA'}>
-        <Center>
-            <Logo />
-        </Center>
-        <Box h={'100%'} p={'10px 0 10px 45px'} >
-            <Divider orientation='vertical' borderColor={'#CED4DA'} />
-        </Box>
-        <Spacer />
-        <RightComponentsContainer />
-    </Flex>
+    <chakra.header height="100%" width="100%">
+        <Flex h={'100%'} w='100%'>
+            <Center>
+                <Logo />
+            </Center>
+            <Box h={'100%'} p={'10px 0 10px 45px'} >
+                <Divider orientation='vertical' />
+            </Box>
+            <Spacer />
+            <RightComponentsContainer />
+        </Flex>
+        <Divider />
+    </chakra.header>
+
 );
 
 const MenuLink = ({ to, children }: {to: To, children: ReactNode }) => (
-    <ChakraLink as={RouterLink} to={to} _hover={{ color: '#be13a3' }}>{children}</ChakraLink>
+    <ChakraLink as={RouterLink} to={to} _hover={{ color: MAIN_GRADIENT_COLOR }}>{children}</ChakraLink>
 )
 
 const Sidebar = () => {
     return (
-        <Stack direction='row' h='100%' w='100%' paddingLeft={4} paddingBottom={4} paddingTop={10}>
-            <Container centerContent p={0}>
-                <Text as='b'>
-                    <T dictKey="database" />
-                </Text>
-                <MenuLink to={routes.starlink.list}>
-                    Starlink
-                </MenuLink>
-                <MenuLink to={routes.oneWeb.list}>
-                    OneWeb
-                </MenuLink>
-                <MenuLink to={routes.amateurSatellites.list}>
-                    <T dictKey="amateurRadio" />
-                </MenuLink>
-                <MenuLink to={routes.spaceStations.list}>
-                    <T dictKey="spaceStations" />
-                </MenuLink>
-                <MenuLink to={routes.allSatellites.list}>
-                    <T dictKey="activeSatellites" />
-                </MenuLink>
-                <Text as='b' paddingTop={4}>
-                    <T dictKey="satellitesLive" />
-                </Text>
-                <MenuLink to={routes.satellitesAbove}>
-                    <T dictKey="satellitesAbove" />
-                </MenuLink>
-                <Text as='b' paddingTop={4}>
-                    <T dictKey="futureFeatures" />
-                </Text>
-                <Text color='#b0b0b1'>
-                <T dictKey="map" />
-                </Text>
-                <Text color='#b0b0b1'>
-                    <T dictKey="map3d" /> 
-                </Text>
-            </Container>
-            <Spacer />
-            <Divider orientation='vertical' />
-        </Stack>
+        <chakra.nav height="100%" width="100%">
+            <Stack direction='row' h='100%' w='100%' paddingLeft={4} paddingBottom={2.5} paddingTop={2.5}>
+                <Container centerContent p={0} pt={4}>
+                    <Text as='b'>
+                        <T dictKey="database" />
+                    </Text>
+                    <MenuLink to={routes.starlink.list}>
+                        Starlink
+                    </MenuLink>
+                    <MenuLink to={routes.oneWeb.list}>
+                        OneWeb
+                    </MenuLink>
+                    <MenuLink to={routes.amateurSatellites.list}>
+                        <T dictKey="amateurRadio" />
+                    </MenuLink>
+                    <MenuLink to={routes.spaceStations.list}>
+                        <T dictKey="spaceStations" />
+                    </MenuLink>
+                    <MenuLink to={routes.allSatellites.list}>
+                        <T dictKey="activeSatellites" />
+                    </MenuLink>
+                    <Text as='b' paddingTop={4}>
+                        <T dictKey="satellitesLive" />
+                    </Text>
+                    <MenuLink to={routes.satellitesAbove}>
+                        <T dictKey="satellitesAbove" />
+                    </MenuLink>
+                    <Text as='b' paddingTop={4}>
+                        <T dictKey="futureFeatures" />
+                    </Text>
+                    <Text color='#b0b0b1'>
+                    <T dictKey="map" />
+                    </Text>
+                    <Text color='#b0b0b1'>
+                        <T dictKey="map3d" /> 
+                    </Text>
+                </Container>
+                <Spacer />
+                <Divider orientation='vertical' />
+            </Stack>
+        </chakra.nav>
     )
 };
 
 const Footer = () => (
-    <Box paddingRight={5} paddingLeft={5}>
+    <chakra.footer paddingRight={5} paddingLeft={5}>
         <Divider />
         <Flex p={1}>
-            <Text fontSize="xs"><T dictKey="developedAndMainted" /></Text>
+            <Text fontSize="xs">
+                <T dictKey="developedAndMainted" />
+                <ChakraLink fontSize="xs" href="https://linkedin.com/in/piotr-miłosz-44bbb42a1/" isExternal color={MAIN_GRADIENT_COLOR}>Piotr Miłosz</ChakraLink>
+            </Text>
             <Spacer />
             <Text fontSize="xs">© {new Date().getFullYear()} satellite-monitor.com</Text>
         </Flex>
-    </Box>
+    </chakra.footer>
 );
 
+const Main = () => (
+    <chakra.main height="100%" width="100%">
+        <Outlet />
+    </chakra.main>
+);
 
 export const Layout = () => {
     const HEADER_HEIGHT = '60px';
@@ -207,8 +234,8 @@ export const Layout = () => {
             gridTemplateColumns={`${NAV_WIDTH} auto`}
         >
             <GridItem area={'header'}>{<Header />}</GridItem>
-            <GridItem bg="white" area={'nav'}>{<Sidebar />}</GridItem>
-            <GridItem area={'main'} overflow={'auto'}>{<Outlet />}</GridItem>
+            <GridItem area={'nav'}>{<Sidebar />}</GridItem>
+            <GridItem area={'main'} overflow={'auto'}>{<Main />}</GridItem>
             <GridItem area={'footer'}>{<Footer />}</GridItem>
         </Grid>
     );
