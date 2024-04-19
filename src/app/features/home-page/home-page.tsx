@@ -6,12 +6,12 @@ export const HomePage = () => {
     let delayHeadingSec = 0;
 
     const orbits = [
-        <Box position="absolute" bottom="-100px" left="-100px" borderWidth="1px" borderRadius="100%" borderColor="#e2e8f0" h="200px" w="200px" zIndex={6}/>,
-        <Box position="absolute" bottom="-200px" left="-200px" borderWidth="1px" borderRadius="100%" borderColor="#e2e8f0" h="400px" w="400px" zIndex={5}/>,
-        <Box position="absolute" bottom="-400px" left="-400px" borderWidth="1px" borderRadius="100%" borderColor="#e2e8f0" h="800px" w="800px" zIndex={4}/>,
-        <Box position="absolute" bottom="-650px" left="-650px" borderWidth="1px" borderRadius="100%" borderColor="#e2e8f0" h="1300px" w="1300px" zIndex={3}/>,
-        <Box position="absolute" bottom="-1000px" left="-1000px" borderWidth="1px" borderRadius="100%" borderColor="#e2e8f0" h="2000px" w="2000px" zIndex={2}/>,
-        <Box position="absolute" bottom="-1350px" left="-1350px" borderWidth="1px" borderRadius="100%" borderColor="#e2e8f0" h="2700px" w="2700px" zIndex={1}/>
+        <Box position="absolute" bottom="-100px" left="-100px" borderWidth="1px" borderRadius="100%" h="200px" w="200px" zIndex={6}/>,
+        <Box position="absolute" bottom="-200px" left="-200px" borderWidth="1px" borderRadius="100%" h="400px" w="400px" zIndex={5}/>,
+        <Box position="absolute" bottom="-400px" left="-400px" borderWidth="1px" borderRadius="100%" h="800px" w="800px" zIndex={4}/>,
+        <Box position="absolute" bottom="-650px" left="-650px" borderWidth="1px" borderRadius="100%" h="1300px" w="1300px" zIndex={3}/>,
+        <Box position="absolute" bottom="-1000px" left="-1000px" borderWidth="1px" borderRadius="100%" h="2000px" w="2000px" zIndex={2}/>,
+        <Box position="absolute" bottom="-1350px" left="-1350px" borderWidth="1px" borderRadius="100%" h="2700px" w="2700px" zIndex={1}/>
     ]
 
     return (

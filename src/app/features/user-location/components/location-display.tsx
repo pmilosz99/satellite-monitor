@@ -1,4 +1,5 @@
 import { useEffect, useId } from "react";
+import { useAtom } from "jotai";
 import { CloseButton, Divider, IconButton, Spacer, Stack, useDisclosure } from '@chakra-ui/react'
 import { useNavigate } from "react-router-dom";
 
@@ -22,11 +23,14 @@ import LocationOffOutlinedIcon from '@mui/icons-material/LocationOffOutlined';
 import ErrorIcon from '@mui/icons-material/Error';
 
 import { useElevation } from "../data-access/altitude";
+
 import { LocationValue } from "./location-value";
+
 import { routes } from "../../../shared/routes";
-import { useAtom } from "jotai";
 import { coordinates } from "../../../shared/atoms";
 import { T } from "../../../shared/components";
+import { CustomToast } from "../../../shared/components/custom-toast";
+import { MAIN_GRADIENT_COLOR } from "../../../shared/themes";
 
 export const LocationDisplay = () => {
     const [atomCoordinates, setAtomCoordinates] = useAtom(coordinates);
@@ -44,32 +48,35 @@ export const LocationDisplay = () => {
         setAtomCoordinates([longitude, latitude]);
     };
 
-    //TODO: create custom toast component
-    const renderToastDescription = () => (
-        <Box borderWidth={1} borderRadius={5} backgroundColor='white' borderColor="#e2e8f0">
+    const renderToastContent = (): JSX.Element => (
+        <>
             <Stack direction={'row'} p={1}>
-                <ErrorIcon sx={{color: '#212529'}} />
-                <Text as={'b'} color='#212529'><T dictKey="locationSharing" /></Text>
+                <ErrorIcon />
+                <Text as={'b'}>
+                    <T dictKey="locationSharing" />
+                </Text>
                 <Spacer />
                 <CloseButton size='sm' onClick={() => toast.closeAll()}/>
             </Stack>
             <Divider />
             <Text fontSize={'md'} padding={2}>
                 <T dictKey="youHave" />
-                <Text as='b' color="#212529"><T dictKey="turnedOff" /></Text>
+                <Text as='b'>
+                    <T dictKey="turnedOff" />
+                </Text>
                 <T dictKey="automaticLocation" />{' '}
                 <Button 
-                    sx={{color: 'blue'}}
-                    variant='link'    
+                    sx={{color: MAIN_GRADIENT_COLOR}}
+                    variant='link' 
                     onClick={() => {
                         navigate(`/${routes.selectLocation}`);
                         toast.closeAll();
                     }} >
-                        <T dictKey="selectHere" />
+                        <T dictKey="here" />
                 </Button>
             </Text>
-        </Box>
-    )
+        </>
+    );
 
     const handleError = (error: GeolocationPositionError): void => {
         if (toast.isActive(id)) return;
@@ -84,7 +91,7 @@ export const LocationDisplay = () => {
             position: 'top',
             duration: 100000,
             isClosable: true,
-            render: () => renderToastDescription()
+            render: () => <CustomToast>{renderToastContent()}</CustomToast>
         })
     };
 
@@ -114,8 +121,8 @@ export const LocationDisplay = () => {
                 <Portal>
                     <PopoverContent w={'15vw'}>
                         <PopoverArrow />
-                        <PopoverCloseButton />
-                        <PopoverHeader bg={'#F8F9FA'}>
+                        <PopoverCloseButton mt="5px"/>
+                        <PopoverHeader>
                             <Center>
                                 <Box>
                                     <Text>
@@ -124,7 +131,7 @@ export const LocationDisplay = () => {
                                 </Box>
                             </Center>
                         </PopoverHeader>
-                        <PopoverBody bg="white">
+                        <PopoverBody>
                             <Center>
                                 <LocationValue 
                                     latitude={latitude} 

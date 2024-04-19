@@ -1,9 +1,10 @@
+import { FC } from "react";
 import { Box } from "@chakra-ui/react";
-import { LinearProgress } from "@mui/material";
-import { DataGrid, GridColDef, GridSlots } from '@mui/x-data-grid'
+import { GridColDef } from '@mui/x-data-grid'
 
 import { useSatellites } from "../data-access/get-satellites.query";
-import { FC } from "react";
+
+import { CutomDataGrid } from "../../../shared/components/custom-data-grid";
 
 const columns: GridColDef[] = [
     { field: 'OBJECT_ID', headerName: 'Object ID', width: 150 },
@@ -34,22 +35,12 @@ export const SatellitesList: FC<ISatellitesList> = ({ group }) => {
     const { data, isLoading } = useSatellites({ GROUP: group })
     
     return (
-        <Box paddingTop={5} paddingRight={5} paddingLeft={5} height={'100%'}>
-            <DataGrid 
+        <Box pt={5} pr={5} pl={5} height={'100%'}>
+            <CutomDataGrid 
                 rows={data || []} 
                 columns={columns}
                 getRowId={(row) => row.OBJECT_ID}
-                density="compact"
-                disableColumnMenu
-                disableRowSelectionOnClick
-                loading={isLoading}
-                disableVirtualization
-                pageSizeOptions={[25, 50, 100]}
-                rowHeight={35}
-                columnBufferPx={17}
-                slots={{
-                    loadingOverlay: LinearProgress as GridSlots['loadingOverlay'],
-                  }}
+                isLoading={isLoading}
                 />
         </Box>
     )
