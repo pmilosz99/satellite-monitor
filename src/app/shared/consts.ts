@@ -8,5 +8,5 @@ export const API_URL_OPEN_ELEVATION = `https://api.open-elevation.com/api/${API_
 
 export const API_URL_CELESTRACK = 'https://celestrak.org/NORAD';
 
-export const OLMAP_ID = 'id' as const;
+export const OLMAP_ID: string = 'id' as const;
 export const OL_DEFAULT_MAP_PROJECTION = 'EPSG:3857';

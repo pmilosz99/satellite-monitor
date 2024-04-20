@@ -20,6 +20,7 @@ export const dict: TLngDict = {
         map: 'Map',
         map3d: 'Map 3D',
         developedAndMainted: 'Developed and maintained by ',
+        devVersion: '· Development version',
         //home-page
         homePageWelcome: 'Welcome to Satellite Monitor',
         homePageDisc: `The Satellite Monitor is a hobby project to facilitate nighttime satellite observing. 
@@ -60,6 +61,7 @@ export const dict: TLngDict = {
         map: 'Mapa',
         map3d: 'Mapa 3D',
         developedAndMainted: 'Aplikacja stworzona i utrzymywana przez ',
+        devVersion: '· Wersja deweloperska',
         //home-page
         homePageWelcome: 'Witaj na Satellite Monitor',
         homePageDisc: `Satellite Monitor jest to hobbistyczny projekt, który umożliwa planowanie nocnych obserwacji satelitów.
