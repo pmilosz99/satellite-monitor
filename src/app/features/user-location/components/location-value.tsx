@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Box, Button, Flex, Spacer, Stack, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, Spacer, Text } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 
 import { routes } from "../../../shared/routes";
@@ -25,7 +25,6 @@ export const LocationValue: FC<ILocationValue> = ({ longtitude, latitude, altitu
 
     return (
         isDisplayValue ? (
-            <Stack direction='row' h='80px' p={1}>
             <Box>
                 <Flex>
                     <Text fontSize='xs' paddingLeft={2}><T dictKey="latitude" /></Text>
@@ -49,7 +48,6 @@ export const LocationValue: FC<ILocationValue> = ({ longtitude, latitude, altitu
                     </Button>
                 .</Text>
             </Box>
-        </Stack>
         ) : (
             <Text fontSize='sm'> 
                 <T dictKey="requiresLocation" />{' '} 

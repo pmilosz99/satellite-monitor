@@ -22,11 +22,12 @@ export const MapComponent: FC<IMapComponent> = ({ id, mapRef }) => {
   const osmLayer = useMemo(() => new TileLayer({ source: new OSM() }), []);
 
   const isDarkTheme = colorMode === THEME_TYPE.DARK;
-  
+  console.log('mode', colorMode);
   const handleChangeTheme = () => {
     if (!mapRef.current) return;
 
     const filter = isDarkTheme ? 'grayscale(100%) invert(85%)' : 'grayscale(0%) invert(0%)'
+    console.log('filter', filter);
 
     osmLayer.on('prerender', (evt) => {
       if (evt.context) {
