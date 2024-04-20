@@ -145,11 +145,10 @@ const Header = () => (
                 <Divider orientation='vertical' />
             </Box>
             <Center>
-                <Tag variant="subtle" ml={5} color={MAIN_GRADIENT_COLOR}>
+                <Tag variant="subtle" ml={5} mr={5} color={MAIN_GRADIENT_COLOR}>
                     <T dictKey="devVersion" />
                 </Tag>
             </Center>
-            
             <Spacer />
             <RightComponentsContainer />
         </Flex>
@@ -186,16 +185,13 @@ const Sidebar = () => {
                         <T dictKey="activeSatellites" />
                     </MenuLink>
                     <Text as='b' paddingTop={4}>
-                        <T dictKey="satellitesLive" />
-                    </Text>
-                    <MenuLink to={routes.satellitesAbove}>
-                        <T dictKey="satellitesAbove" />
-                    </MenuLink>
-                    <Text as='b' paddingTop={4}>
                         <T dictKey="futureFeatures" />
                     </Text>
                     <Text color='#b0b0b1'>
-                    <T dictKey="map" />
+                        <T dictKey="satellitesAbove" />
+                    </Text>
+                    <Text color='#b0b0b1'>
+                        <T dictKey="map" />
                     </Text>
                     <Text color='#b0b0b1'>
                         <T dictKey="map3d" /> 

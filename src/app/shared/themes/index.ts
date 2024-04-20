@@ -2,7 +2,7 @@ import { ThemeConfig, extendTheme } from "@chakra-ui/react";
 
 import { alertTheme } from "./components/alert";
 
-export const MAIN_GRADIENT = 'linear(to-l, #7928CA, #FF0080)';
+export const MAIN_GRADIENT = 'linear(to-l, #7928CA, #ff0080f6)';
 export const MAIN_GRADIENT_COLOR = '#be13a3';
 
 export const CHAKRA_THEME_STORE_KEY = 'chakra-ui-color-mode';

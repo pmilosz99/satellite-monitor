@@ -2,7 +2,7 @@ import { Box, Center, Fade, Heading, Text } from "@chakra-ui/react"
 import { T } from "../../shared/components";
 
 export const HomePage = () => {
-    let delayOrbitSec = 0;
+    let delayOrbitSec = 0.7;
     // let delayHeadingSec = 0;
 
     const orbits = [
@@ -17,7 +17,7 @@ export const HomePage = () => {
     return (
         <Box position="relative" h="100%" overflow="hidden">
             <Center>
-            <Heading size='4xl' p={20} bgGradient='linear(to-l, #7928CA, #FF0080)' bgClip='text' zIndex={7}>
+            <Heading size='4xl' p={20} bgGradient='linear(to-l, #7928CA, #ff0080f6)' bgClip='text' zIndex={7}>
                 <T dictKey="homePageWelcome" />
             </Heading>
             {/**====ANIMATE NOT WORKING===== */}
