@@ -1,9 +1,9 @@
-import { Box, Center, Collapse, Fade, Heading, Text } from "@chakra-ui/react"
+import { Box, Center, Fade, Heading, Text } from "@chakra-ui/react"
 import { T } from "../../shared/components";
 
 export const HomePage = () => {
     let delayOrbitSec = 0;
-    let delayHeadingSec = 0;
+    // let delayHeadingSec = 0;
 
     const orbits = [
         <Box position="absolute" bottom="-100px" left="-100px" borderWidth="1px" borderRadius="100%" h="200px" w="200px" zIndex={6}/>,

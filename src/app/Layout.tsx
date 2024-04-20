@@ -21,6 +21,7 @@ import {
     Text,
     useColorMode,
     chakra,
+    Tag,
 } from "@chakra-ui/react";
 import { ChevronDownIcon, MoonIcon, SunIcon } from '@chakra-ui/icons'
 import { Link as RouterLink, Outlet, To } from "react-router-dom";
@@ -143,6 +144,12 @@ const Header = () => (
             <Box h={'100%'} p={'10px 0 10px 45px'} >
                 <Divider orientation='vertical' />
             </Box>
+            <Center>
+                <Tag variant="subtle" ml={5} color={MAIN_GRADIENT_COLOR}>
+                    <T dictKey="devVersion" />
+                </Tag>
+            </Center>
+            
             <Spacer />
             <RightComponentsContainer />
         </Flex>

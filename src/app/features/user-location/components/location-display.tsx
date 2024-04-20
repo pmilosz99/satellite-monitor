@@ -35,7 +35,7 @@ import { MAIN_GRADIENT_COLOR } from "../../../shared/themes";
 export const LocationDisplay = () => {
     const [atomCoordinates, setAtomCoordinates] = useAtom(coordinates);
 
-    const coords = { latitude: atomCoordinates?.[0], longtitude: atomCoordinates?.[1] };
+    const coords = { latitude: atomCoordinates?.[0] || 0, longtitude: atomCoordinates?.[1] || 0 };
 
     const toast = useToast();
     const id = useId();
@@ -99,6 +99,7 @@ export const LocationDisplay = () => {
         navigator.geolocation.getCurrentPosition(handleSuccess, handleError);
     };
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(getUserPosition, [])
 
     const displayElevation = data?.results?.[0].elevation;
