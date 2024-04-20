@@ -120,7 +120,7 @@ export const LocationDisplay = () => {
                     />
                 </PopoverTrigger>
                 <Portal>
-                    <PopoverContent w={'15vw'}>
+                    <PopoverContent w="280px">
                         <PopoverArrow />
                         <PopoverCloseButton mt="5px"/>
                         <PopoverHeader>

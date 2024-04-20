@@ -22,12 +22,11 @@ export const MapComponent: FC<IMapComponent> = ({ id, mapRef }) => {
   const osmLayer = useMemo(() => new TileLayer({ source: new OSM() }), []);
 
   const isDarkTheme = colorMode === THEME_TYPE.DARK;
-  console.log('mode', colorMode);
+
   const handleChangeTheme = () => {
     if (!mapRef.current) return;
 
     const filter = isDarkTheme ? 'grayscale(100%) invert(85%)' : 'grayscale(0%) invert(0%)'
-    console.log('filter', filter);
 
     osmLayer.on('prerender', (evt) => {
       if (evt.context) {
@@ -47,8 +46,6 @@ export const MapComponent: FC<IMapComponent> = ({ id, mapRef }) => {
     mapRef.current.render();
   };
 
-  useEffect(handleChangeTheme, [isDarkTheme, mapRef, osmLayer]);
-
   useEffect(() => {
     const map = new Map({
       target: id,
@@ -64,6 +61,8 @@ export const MapComponent: FC<IMapComponent> = ({ id, mapRef }) => {
     return () => map.setTarget('')
   
   }, [id, mapRef, osmLayer]);
+
+  useEffect(handleChangeTheme, [mapRef, isDarkTheme, osmLayer]);
 
   return (
     <div id={id} style={{ width: '100%' , height: '100%' }} />

@@ -235,10 +235,11 @@ export const Layout = () => {
             h={'100vh'}
             gridTemplateRows={`${HEADER_HEIGHT} auto ${FOOTER_HEIGHT}`}
             gridTemplateColumns={`${NAV_WIDTH} auto`}
+            overflowY="auto"
         >
             <GridItem area={'header'}>{<Header />}</GridItem>
             <GridItem area={'nav'}>{<Sidebar />}</GridItem>
-            <GridItem area={'main'} overflow={'auto'}>{<Main />}</GridItem>
+            <GridItem area={'main'} overflowX={'auto'}>{<Main />}</GridItem>
             <GridItem area={'footer'}>{<Footer />}</GridItem>
         </Grid>
     );
