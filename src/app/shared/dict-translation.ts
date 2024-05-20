@@ -21,6 +21,7 @@ export const dict: TLngDict = {
         map3d: 'Map 3D',
         developedAndMainted: 'Developed and maintained by ',
         devVersion: '· Development version',
+        searchSatellite: 'Search for a satellite',
         //home-page
         homePageWelcome: 'Welcome to Satellite Monitor',
         homePageDisc: `The Satellite Monitor is a hobby project to facilitate nighttime satellite observing. 
@@ -31,9 +32,9 @@ export const dict: TLngDict = {
         //user-location
         yourLocation: 'Your location',
         location: 'Location',
-        latitude: 'Latitude:',
-        longtitude: 'Longtitude:',
-        altitude: 'Altitude:',
+        latitude: 'Latitude',
+        longtitude: 'Longtitude',
+        altitude: 'Altitude',
         selectManualy: 'or select manually location',
         here: 'here',
         requiresLocation: 'The application requires a location to function properly. Please select a location by clicking',
@@ -48,6 +49,13 @@ export const dict: TLngDict = {
         turnedOff: 'turned off ',
         automaticLocation: `automatic location sharing. 
         For all application features to work, you must enable location sharing or manually select`,
+        //satellite details
+        satelliteDetails: 'Satellite details',
+        height: 'Height',
+        name: 'Name',
+        numberOrbit: 'Number of orbits',
+        orbitTime: 'Time at which the object circles the earth',
+        warningNumberOrbit: 'Drawing a large number of orbits can take a while.',
     },
     [LANGUAGE_VALUES.PL]: {
         //layout
@@ -62,6 +70,7 @@ export const dict: TLngDict = {
         map3d: 'Mapa 3D',
         developedAndMainted: 'Aplikacja stworzona i utrzymywana przez ',
         devVersion: '· Wersja deweloperska',
+        searchSatellite: 'Wyszukaj satelitę',
         //home-page
         homePageWelcome: 'Witaj na Satellite Monitor',
         homePageDisc: `Satellite Monitor jest to hobbistyczny projekt, który umożliwa planowanie nocnych obserwacji satelitów.
@@ -71,9 +80,9 @@ export const dict: TLngDict = {
         //user-location
         yourLocation: 'Twoja lokalizacja',
         location: 'Lokalizacja',
-        latitude: 'Szerokość geograficzna:',
-        longtitude: 'Długość geograficzna:',
-        altitude: 'Wysokość:',
+        latitude: 'Szerokość geograficzna',
+        longtitude: 'Długość geograficzna',
+        altitude: 'Wysokość',
         selectManualy: 'lub wybierz lokalizację ręcznie',
         here: 'tutaj',
         requiresLocation: 'Aplikacja wymaga lokalizacji aby funkcjonować poprawnie. Wybierz ręcznie lokalizację przez kliknięcie',
@@ -88,5 +97,12 @@ export const dict: TLngDict = {
         turnedOff: 'wyłączyłeś ',
         automaticLocation: `automatyczną lokalizację. 
         Dla poprawnego działania aplikacji musisz udostępnić lokalizację lub manualnie wybrać`,
+        //satellite details
+        satelliteDetails: 'Dane szczegółowe',
+        height: 'Wysokość',
+        name: 'Nazwa',
+        numberOrbit: 'Ilość orbit',
+        orbitTime: 'Czas w jakim obiekt okrąża ziemie',
+        warningNumberOrbit: 'Narysowanie dużej ilości orbit może chwilę potrwać',
     }
 }

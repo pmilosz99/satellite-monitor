@@ -5,7 +5,7 @@ const currentGP = 'elements/gp.php';
 const satellites = `${API_URL_CELESTRACK}/${currentGP}`;
 
 export type SatellitesQueryParams = {
-    CATNR?: number;
+    CATNR?: string;
     INTDES?: string;
     GROUP?: string;
     NAME?: string;
@@ -13,5 +13,5 @@ export type SatellitesQueryParams = {
 }
 
 export const paths = {
-    SATELLITES: (queryParam: SatellitesQueryParams) => `${getPath(satellites, queryParam)}&FORMAT=json`,
+    SATELLITES: (queryParam: SatellitesQueryParams) => `${getPath(satellites, queryParam)}`,
 }

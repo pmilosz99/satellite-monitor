@@ -2,13 +2,15 @@ import { FC } from "react";
 import { Box } from "@chakra-ui/react";
 import { GridColDef } from '@mui/x-data-grid'
 
-import { useSatellites } from "../data-access/get-satellites.query";
+import { useSatellites } from "../data-access/get-satellites-json.query";
 
 import { CutomDataGrid } from "../../../shared/components/custom-data-grid";
+import { CustomLink } from "../../../shared/components/custom-link";
+import { routes } from "../../../shared/routes";
 
 const columns: GridColDef[] = [
+    { field: 'NORAD_CAT_ID', headerName: 'Norad ID', width: 150, renderCell: (row) =>  <CustomLink to={routes.satellite.item.goTo(row.value)}>{row.value}</CustomLink>},
     { field: 'OBJECT_ID', headerName: 'Object ID', width: 150 },
-    { field: 'NORAD_CAT_ID', headerName: 'Norad cat id', width: 150 },
     { field: 'OBJECT_NAME', headerName: 'Name', width: 150 },
     { field: 'EPOCH', headerName: 'Epoch', width: 250 },
     { field: 'MEAN_MOTION', headerName: 'Mean motion', width: 150 },
@@ -30,16 +32,16 @@ interface ISatellitesList {
     group: string
 }
 
-export const SatellitesList: FC<ISatellitesList> = ({ group }) => {
+export const SatelliteList: FC<ISatellitesList> = ({ group }) => {
 
     const { data, isLoading } = useSatellites({ GROUP: group })
-    
+    console.log(data);
     return (
         <Box pt={5} pr={5} pl={5} height={'100%'}>
             <CutomDataGrid 
                 rows={data || []} 
                 columns={columns}
-                getRowId={(row) => row.OBJECT_ID}
+                getRowId={(row) => `${row.NORAD_CAT_ID}${row.OBJECT_NAME}`}
                 isLoading={isLoading}
                 />
         </Box>

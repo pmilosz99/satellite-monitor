@@ -22,7 +22,12 @@ const darkThemeValues ={
             borderWidth: '1px',
             color: 'white',
         }
-    }
+    },
+    SearchBarMenu: {
+      baseStyle: {
+        bg: '#232934',
+      }
+    },
   }
 }
 
@@ -47,7 +52,12 @@ const lightThemeValues = {
         baseStyle: {
             borderColor: '#d9dde1',
         }
-    }
+    },
+    SearchBarMenu: {
+      baseStyle: {
+        bg: '#edf2f7',
+      }
+    },
   }
 }
 

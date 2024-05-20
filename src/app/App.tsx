@@ -1,6 +1,5 @@
-import { QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import { useAtomValue } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { ChakraProvider, useColorMode } from "@chakra-ui/react";
 import {
   ThemeProvider as MaterialThemeProvider,
@@ -10,17 +9,19 @@ import {
 
 import { Layout } from "./Layout"
 
-import { queryClient } from "./shared/react-query";
 import { routes } from "./shared/routes";
 import { HomePage } from "./features/home-page";
 
-import { SatellitesList } from "./features/satellites/components/satellites-overview";
+import { SatelliteList } from "./features/satellites/containers/satellite-list";
 import { SelectLocation } from "./features/user-location/containers";
 
 import { THEME_TYPE, darkTheme, lightTheme } from "./shared/themes";
-import { currentTheme, language } from "./shared/atoms";
+import { currentTheme, language, tle } from "./shared/atoms";
 import { LANGUAGE_VALUES } from "./shared/dict-translation";
 import { plPL } from "@mui/material/locale";
+import { SatelliteDetails } from "./features/satellites/containers/satellite-details";
+import { useSatellitesTle } from "./features/satellites/data-access";
+import { useEffect } from "react";
 
 const router = createBrowserRouter([
   {
@@ -32,24 +33,28 @@ const router = createBrowserRouter([
         element: <HomePage />
       },
       {
-        path: routes.starlink.list,
-        element: <SatellitesList group="starlink"/>,
+        path: routes.satellite.item.path,
+        element: <SatelliteDetails />
       },
       {
-        path: routes.oneWeb.list,
-        element: <SatellitesList group="oneweb"/>,
+        path: routes.satellite.list.starlink,
+        element: <SatelliteList group="starlink"/>,
       },
       {
-        path: routes.amateurSatellites.list,
-        element: <SatellitesList group="amateur"/>,
+        path: routes.satellite.list.oneWeb,
+        element: <SatelliteList group="oneweb"/>,
       },
       {
-        path: routes.spaceStations.list,
-        element: <SatellitesList group="stations"/>,
+        path: routes.satellite.list.amateurSatellites,
+        element: <SatelliteList group="amateur"/>,
       },
       {
-        path: routes.allSatellites.list,
-        element: <SatellitesList group="active"/>
+        path: routes.satellite.list.spaceStation,
+        element: <SatelliteList group="stations"/>,
+      },
+      {
+        path: routes.satellite.list.allSatellites,
+        element: <SatelliteList group="active"/>,
       },
       {
         path: routes.selectLocation,
@@ -63,9 +68,16 @@ export function App() {
   const { colorMode } = useColorMode();
   const atomTheme = useAtomValue(currentTheme); 
   const atomLanguage = useAtomValue(language);
+  const setTle = useSetAtom(tle);
 
   const currLng = atomLanguage === LANGUAGE_VALUES.PL ? plPL : {};
   const materialTheme = muiCreateTheme(currLng);
+
+  const { data: tleData } = useSatellitesTle({ GROUP: 'active' });
+
+  useEffect(() => {
+    setTle(tleData || null);
+  }, [tleData, setTle]);
 
   /**
    * We have to use both solutions (useColorMode and atom value) 
@@ -79,9 +91,7 @@ export function App() {
   return (
     <ChakraProvider theme={theme}>
       <MaterialThemeProvider theme={{ [THEME_ID]: materialTheme }}>
-        <QueryClientProvider client={queryClient}>
-          <RouterProvider router={router} />
-        </QueryClientProvider>  
+        <RouterProvider router={router} />
       </MaterialThemeProvider>
     </ChakraProvider>
   )

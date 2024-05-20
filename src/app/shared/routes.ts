@@ -1,19 +1,18 @@
 export const routes = {
     home: '/',
-    starlink: {
-        list: 'starlink'
-    },
-    oneWeb: {
-        list: 'one-web'
-    },
-    amateurSatellites: {
-        list: 'amateur-satellites'
-    },
-    spaceStations: {
-        list: 'space-stations'
-    },
-    allSatellites: {
-        list: 'all-satellites'
+    satellite: {
+        list: {
+            starlink: 'satellites/starlink',
+            oneWeb: 'satellites/one-web',
+            amateurSatellites: 'satellites/amateur-satellites',
+            spaceStation: 'satellites/space-stations',
+            allSatellites: 'satellites',
+        },
+        item: {
+            path: '/satellites/:satelliteId',
+            goTo: (satelliteId: string) => '/satellites/:satelliteId'.replace(':satelliteId', satelliteId),
+        }
+
     },
     selectLocation: 'select-location',
     satellitesAbove: 'satellites-above',

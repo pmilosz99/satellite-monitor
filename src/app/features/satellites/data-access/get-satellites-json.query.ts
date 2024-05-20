@@ -26,14 +26,14 @@ interface ISatellitesResponse {
 }
 
 const getSatellites = async (queryParams: SatellitesQueryParams): Promise<ISatellitesResponse[]> => {
-    const res = await getHttpClient().get<ISatellitesResponse[]>(paths.SATELLITES(queryParams));
+    const res = await getHttpClient().get<ISatellitesResponse[]>(`${paths.SATELLITES(queryParams)}&FORMAT=json`);
 
     return res.data;
 };
 
 export const useSatellites = (queryParams: SatellitesQueryParams) => {
     return useQuery({
-        queryKey: queryKey.SATELLITES_ABOVE(queryParams),
+        queryKey: queryKey.SATELLITES(queryParams),
         queryFn: () => getSatellites(queryParams),
     });
 };
