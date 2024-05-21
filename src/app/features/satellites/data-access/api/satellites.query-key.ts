@@ -5,5 +5,5 @@ enum QUERY_KEY {
 }
 
 export const queryKey = {
-    SATELLITES_ABOVE: (queryParams?: SatellitesQueryParams) => queryParams ? [QUERY_KEY.SATELLITES, queryParams] : [QUERY_KEY.SATELLITES],
+    SATELLITES: (queryParams?: SatellitesQueryParams) => queryParams ? [QUERY_KEY.SATELLITES, queryParams] : [QUERY_KEY.SATELLITES],
 }

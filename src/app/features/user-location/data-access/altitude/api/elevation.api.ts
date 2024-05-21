@@ -9,7 +9,6 @@ export type ElevationQueryParam = {
 
 const getPath = (url: string, queryParams: ElevationQueryParam[]): string => {
     const positions = queryParams.map((position) => [position.latitude, position.longtitude].join(',')).join('|');
-    console.log(positions);
 
     return `${url}?locations=${positions}`;
 };

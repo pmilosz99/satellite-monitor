@@ -25,15 +25,15 @@ interface ISatellitesResponse {
     MEAN_MOTION_DDOT: number;
 }
 
-const getSatellites = async (queryParams: SatellitesQueryParams): Promise<ISatellitesResponse[]> => {
-    const res = await getHttpClient().get<ISatellitesResponse[]>(paths.SATELLITES(queryParams));
+const getSatellites = async (queryParams: SatellitesQueryParams): Promise<ISatellitesResponse[] | string> => {
+    const res = await getHttpClient().get<ISatellitesResponse[]>(`${paths.SATELLITES(queryParams)}`);
 
     return res.data;
 };
 
 export const useSatellites = (queryParams: SatellitesQueryParams) => {
     return useQuery({
-        queryKey: queryKey.SATELLITES_ABOVE(queryParams),
+        queryKey: queryKey.SATELLITES(queryParams),
         queryFn: () => getSatellites(queryParams),
     });
 };

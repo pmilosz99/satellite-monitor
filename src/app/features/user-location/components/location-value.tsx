@@ -27,17 +27,17 @@ export const LocationValue: FC<ILocationValue> = ({ longtitude, latitude, altitu
         isDisplayValue ? (
             <Box>
                 <Flex>
-                    <Text fontSize='xs' paddingLeft={2}><T dictKey="latitude" /></Text>
+                    <Text fontSize='xs' paddingLeft={2}><T dictKey="latitude" />:</Text>
                     <Spacer />
                     <Text fontSize='xs'>{latitude}</Text>
                 </Flex>
                 <Flex>
-                    <Text fontSize='xs' paddingLeft={2} paddingRight={3}><T dictKey="longtitude"/></Text>
+                    <Text fontSize='xs' paddingLeft={2} paddingRight={3}><T dictKey="longtitude"/>:</Text>
                     <Spacer />
                     <Text fontSize='xs'>{longtitude}</Text>
                 </Flex>
                 <Flex>
-                    <Text fontSize='xs' paddingLeft={2}><T dictKey="altitude"/></Text>
+                    <Text fontSize='xs' paddingLeft={2}><T dictKey="altitude"/>:</Text>
                     <Spacer />
                     <Text fontSize='xs'>{altitude} m</Text>
                 </Flex>
