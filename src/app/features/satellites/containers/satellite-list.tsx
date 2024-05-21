@@ -2,7 +2,7 @@ import { FC } from "react";
 import { Box } from "@chakra-ui/react";
 import { GridColDef } from '@mui/x-data-grid'
 
-import { useSatellites } from "../data-access/get-satellites-json.query";
+import { useSatellites } from "../data-access/get-satellites.query";
 
 import { CutomDataGrid } from "../../../shared/components/custom-data-grid";
 import { CustomLink } from "../../../shared/components/custom-link";
@@ -34,14 +34,14 @@ interface ISatellitesList {
 
 export const SatelliteList: FC<ISatellitesList> = ({ group }) => {
 
-    const { data, isLoading } = useSatellites({ GROUP: group })
-    console.log(data);
+    const { data, isLoading } = useSatellites({ GROUP: group, FORMAT: 'json' });
+
     return (
         <Box pt={5} pr={5} pl={5} height={'100%'}>
             <CutomDataGrid 
-                rows={data || []} 
+                rows={data as [] || []} 
                 columns={columns}
-                getRowId={(row) => `${row.NORAD_CAT_ID}${row.OBJECT_NAME}`}
+                getRowId={(row) => row?.NORAD_CAT_ID}
                 isLoading={isLoading}
                 />
         </Box>

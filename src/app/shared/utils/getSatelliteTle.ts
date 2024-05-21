@@ -6,9 +6,10 @@ export const getSatelliteTle = (tle: string, noradId: string) => {
         const line1 = lines[i + 1];
         const line2 = lines[i + 2];
 
-        const searchSatelliteNoradId = line1?.substring(2, 7);
+        const satelliteNoradId = parseInt(line1?.substring(2, 7));
+        const searchedNoradId = parseInt(noradId);
 
-        if (searchSatelliteNoradId === noradId) {
+        if (satelliteNoradId === searchedNoradId) {
             return [line0.replace('\r', ''), line1.replace('\r', ''), line2.replace('\r', '')];
         }
     }

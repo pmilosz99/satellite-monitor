@@ -45,6 +45,7 @@ import { getJsonTle } from "./shared/utils/getJsonTle";
 import { MAIN_GRADIENT, MAIN_GRADIENT_COLOR, THEME_TYPE } from "./shared/themes";
 
 import { plFlag, gbFlag } from '../assets/icons';
+import useMap from "./shared/hooks";
 
 const Logo = () => (
     <RouterLink to="/">
@@ -154,19 +155,21 @@ const KeyboardKeySearchBarOpen = () => (
 interface ISearchBarMenu {
     isOpen: boolean;
     inputGroupRef: RefObject<HTMLDivElement>;
-    items: Record<string, string>[];
+    items: Record<string, string | number>[];
     onClose: () => void;
     onClick: () => void;
 }
 
 const SearchBarMenu: FC<ISearchBarMenu> = ({ isOpen, onClose, onClick, inputGroupRef, items }) => {
     const containerRef = useRef<HTMLDivElement>(null);
+    const map = useMap();
 
     const styles = useStyleConfig('SearchBarMenu');
 
     const handleClickItem = (): void => {
         onClick();
         onClose();
+        map?.getView().setZoom(0);
     };
 
     const handleAddListeners = (): (() => void) => {
@@ -202,7 +205,7 @@ const SearchBarMenu: FC<ISearchBarMenu> = ({ isOpen, onClose, onClick, inputGrou
                     {isOpen && (
                         <Stack p={3}>
                             {items.map((item) => (
-                                <ChakraLink key={item.noradId} as={RouterLink} to={routes.satellite.item.goTo(item.noradId)} onClick={handleClickItem}>{item.name}</ChakraLink>
+                                <ChakraLink key={item.noradId} as={RouterLink} to={routes.satellite.item.goTo(`${item.noradId}`)} onClick={handleClickItem}>{item.name}</ChakraLink>
                             ))}
                     </Stack>
                     )}
@@ -257,14 +260,14 @@ const SearchBar = () => {
     const addKeydownListeners = (): (() => void) => {
         let keyPressedCache = '';
 
-        const onClickOpenSearchBar = ({ key, preventDefault}: KeyboardEvent) => {
+        const onClickOpenSearchBar = (event: KeyboardEvent) => {
             if (!inputRef.current) return;
             
-            if (keyPressedCache === 'Control' && key === 'k') {
-                preventDefault();
+            if (keyPressedCache === 'Control' && event.key === 'k') {
+                event.preventDefault();
                 inputRef.current.focus();
             }
-            keyPressedCache = key;
+            keyPressedCache = event.key;
         };
 
         const onClickEsc = ({ key }: KeyboardEvent) => {
@@ -310,7 +313,13 @@ const SearchBar = () => {
             <SearchBarMenu inputGroupRef={inputGroupRef} isOpen={isMenuOpen && !!results?.length} onClose={closeMenu} onClick={onClickMenu} items={results || []} />
         </Box>
     )
-}
+};
+
+const DevVersion = () => (
+    <Tag variant="subtle" ml={5} mr={5} color={MAIN_GRADIENT_COLOR}>
+        <T dictKey="devVersion" />
+    </Tag>
+);
 
 const Header = () => (
     <chakra.header height="100%" width="100%">
@@ -322,9 +331,7 @@ const Header = () => (
                 <Divider orientation='vertical' />
             </Box>
             <Center>
-                <Tag variant="subtle" ml={5} mr={5} color={MAIN_GRADIENT_COLOR}>
-                    <T dictKey="devVersion" />
-                </Tag>
+                <DevVersion />
             </Center>
             <Center>
                 <SearchBar />

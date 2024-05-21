@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { useAtomValue, useSetAtom } from "jotai";
 import { ChakraProvider, useColorMode } from "@chakra-ui/react";
@@ -6,6 +7,7 @@ import {
   createTheme as muiCreateTheme,
   THEME_ID,
 } from '@mui/material/styles';
+import { plPL } from "@mui/material/locale";
 
 import { Layout } from "./Layout"
 
@@ -13,15 +15,14 @@ import { routes } from "./shared/routes";
 import { HomePage } from "./features/home-page";
 
 import { SatelliteList } from "./features/satellites/containers/satellite-list";
+import { SatelliteDetails } from "./features/satellites/containers/satellite-details";
 import { SelectLocation } from "./features/user-location/containers";
 
 import { THEME_TYPE, darkTheme, lightTheme } from "./shared/themes";
 import { currentTheme, language, tle } from "./shared/atoms";
 import { LANGUAGE_VALUES } from "./shared/dict-translation";
-import { plPL } from "@mui/material/locale";
-import { SatelliteDetails } from "./features/satellites/containers/satellite-details";
-import { useSatellitesTle } from "./features/satellites/data-access";
-import { useEffect } from "react";
+
+import { useSatellites } from "./features/satellites/data-access";
 
 const router = createBrowserRouter([
   {
@@ -73,10 +74,10 @@ export function App() {
   const currLng = atomLanguage === LANGUAGE_VALUES.PL ? plPL : {};
   const materialTheme = muiCreateTheme(currLng);
 
-  const { data: tleData } = useSatellitesTle({ GROUP: 'active' });
+  const { data: tleData } = useSatellites({ GROUP: 'active', FORMAT: 'tle' });
 
   useEffect(() => {
-    setTle(tleData || null);
+    setTle(tleData as string || null);
   }, [tleData, setTle]);
 
   /**

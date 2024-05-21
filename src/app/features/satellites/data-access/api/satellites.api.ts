@@ -10,8 +10,9 @@ export type SatellitesQueryParams = {
     GROUP?: string;
     NAME?: string;
     SPECIAL?: string;
+    FORMAT: string;
 }
 
 export const paths = {
     SATELLITES: (queryParam: SatellitesQueryParams) => `${getPath(satellites, queryParam)}`,
-}
+};

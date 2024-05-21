@@ -25,8 +25,8 @@ interface ISatellitesResponse {
     MEAN_MOTION_DDOT: number;
 }
 
-const getSatellites = async (queryParams: SatellitesQueryParams): Promise<ISatellitesResponse[]> => {
-    const res = await getHttpClient().get<ISatellitesResponse[]>(`${paths.SATELLITES(queryParams)}&FORMAT=json`);
+const getSatellites = async (queryParams: SatellitesQueryParams): Promise<ISatellitesResponse[] | string> => {
+    const res = await getHttpClient().get<ISatellitesResponse[]>(`${paths.SATELLITES(queryParams)}`);
 
     return res.data;
 };

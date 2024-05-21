@@ -1,2 +1,2 @@
-export { useSatellites } from './get-satellites-json.query';
+export { useSatellites } from './get-satellites.query';
 export { useSatellitesTle } from './get-satellites-tle.query';

@@ -1,6 +1,9 @@
 import { FC, useEffect, useMemo } from 'react';
 import { useColorMode } from '@chakra-ui/react';
 
+import { useSetAtom } from 'jotai';
+import { map } from '../atoms';
+
 import Map from 'ol/Map';
 import View from 'ol/View';
 import { OSM } from 'ol/source';
@@ -19,6 +22,7 @@ interface IMapComponent {
 
 export const MapComponent: FC<IMapComponent> = ({ id, mapRef }) => {
   const { colorMode } = useColorMode();
+  const setGlobalMapState = useSetAtom(map);
 
   const osmLayer = useMemo(() => new TileLayer({ source: new OSM({ wrapX: false }) }), []);
 
@@ -62,11 +66,12 @@ export const MapComponent: FC<IMapComponent> = ({ id, mapRef }) => {
       }),
     });
 
-    mapRef.current = map
+    mapRef.current = map;
+    setGlobalMapState(map);
 
     return () => map.setTarget('')
   
-  }, [id, mapRef, osmLayer]);
+  }, [id, mapRef, osmLayer, setGlobalMapState]);
 
   useEffect(handleChangeTheme, [mapRef, isDarkTheme, osmLayer]);
 
