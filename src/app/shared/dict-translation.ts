@@ -22,6 +22,7 @@ export const dict: TLngDict = {
         developedAndMainted: 'Developed and maintained by ',
         devVersion: '· Development version',
         searchSatellite: 'Search for a satellite',
+        fetchErrorData: 'Data fetch error',
         //home-page
         homePageWelcome: 'Welcome to Satellite Monitor',
         homePageDisc: `The Satellite Monitor is a hobby project to facilitate nighttime satellite observing. 
@@ -60,6 +61,9 @@ export const dict: TLngDict = {
         trackPosition: 'Track position',
         on: 'on',
         off: 'off',
+        notFoundSat: 'Satellite not found',
+        fetchErrorDesc: 'A fetch data error has occurred. Please try again in two hour'
+
     },
     [LANGUAGE_VALUES.PL]: {
         //layout
@@ -112,5 +116,8 @@ export const dict: TLngDict = {
         trackPosition: 'Śledź pozycję',
         on: 'wł',
         off: 'wył',
+        notFoundSat: 'Nie znaleziono satelity',
+        fetchErrorData: 'Błąd pobierania danych',
+        fetchErrorDesc: 'Wystąpił błąd pobierania danych. Spróbuj ponownie za dwie godzinę'
     }
 }
