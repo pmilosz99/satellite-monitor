@@ -1,0 +1,1 @@
+export { DetailsBox } from './details-box';

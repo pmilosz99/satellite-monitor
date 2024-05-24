@@ -56,6 +56,10 @@ export const dict: TLngDict = {
         numberOrbit: 'Number of orbits',
         orbitTime: 'Time at which the object circles the earth',
         warningNumberOrbit: 'Drawing a large number of orbits can take a while.',
+        zoom: 'Zoom in',
+        trackPosition: 'Track position',
+        on: 'on',
+        off: 'off',
     },
     [LANGUAGE_VALUES.PL]: {
         //layout
@@ -104,5 +108,9 @@ export const dict: TLngDict = {
         numberOrbit: 'Ilość orbit',
         orbitTime: 'Czas w jakim obiekt okrąża ziemie',
         warningNumberOrbit: 'Narysowanie dużej ilości orbit może chwilę potrwać',
+        zoom: 'Przybliż',
+        trackPosition: 'Śledź pozycję',
+        on: 'wł',
+        off: 'wył',
     }
 }

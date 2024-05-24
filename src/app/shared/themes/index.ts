@@ -28,6 +28,24 @@ const darkThemeValues ={
         bg: '#232934',
       }
     },
+    DetailsBoxButtons: {
+      baseStyle: {
+        _hover: {
+          bg: '#19a00d1a',
+        },
+        _active: {
+          bg: '#19a00d3f',
+        },
+        _focusVisible: {
+          bg: '#19a00d3f',
+        }
+      },
+      variants: {
+        onMode: {
+          bg: '#19a00d3f',
+        },
+      }
+    },
   }
 }
 
@@ -56,6 +74,24 @@ const lightThemeValues = {
     SearchBarMenu: {
       baseStyle: {
         bg: '#edf2f7',
+      }
+    },
+    DetailsBoxButtons: {
+      baseStyle: {
+        _hover: {
+          bg: '#0fb10f77',
+        },
+        _active: {
+          bg: '#18a918c4',
+        },
+        _focusVisible: {
+          bg: '#18a918c4',
+        }
+      },
+      variants: {
+        onMode: {
+          bg: '#18a918c4'
+        }
       }
     },
   }
