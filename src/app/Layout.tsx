@@ -35,17 +35,18 @@ import { ChevronDownIcon, MoonIcon, SearchIcon, SunIcon } from '@chakra-ui/icons
 import { Link as RouterLink, Outlet, To } from "react-router-dom";
 import SatelliteAltOutlinedIcon from '@mui/icons-material/SatelliteAltOutlined';
 
+import { T } from "./shared/components";
 import { LocationDisplay } from "./features/user-location/components";
 
-import { currentTheme, language, tle } from "./shared/atoms";
-import { LANGUAGE_VALUES, dict } from "./shared/dict-translation";
-import { routes } from "./shared/routes";
-import { T } from "./shared/components";
-import { getJsonTle } from "./shared/utils/getJsonTle";
-import { MAIN_GRADIENT, MAIN_GRADIENT_COLOR, THEME_TYPE } from "./shared/themes";
+import { useMap, useTranslation } from "./shared/hooks";
 
+import { currentTheme, language, tle } from "./shared/atoms";
+import { LANGUAGE_VALUES } from "./shared/dict-translation";
+import { routes } from "./shared/routes";
+import { getJsonTle } from "./shared/utils/getJsonTle";
+
+import { MAIN_GRADIENT, MAIN_GRADIENT_COLOR, THEME_TYPE } from "./shared/themes";
 import { plFlag, gbFlag } from '../assets/icons';
-import useMap from "./shared/hooks";
 
 const Logo = () => (
     <RouterLink to="/">
@@ -220,7 +221,8 @@ const SearchBar = () => {
     const inputRef = useRef<HTMLInputElement>(null);
     const inputGroupRef = useRef<HTMLDivElement>(null);
 
-    const lng = useAtomValue(language);
+    const placeholder = useTranslation('searchSatellite') as string;
+
     const tleData = useAtomValue(tle);
 
     const json = getJsonTle(tleData || '');
@@ -288,8 +290,6 @@ const SearchBar = () => {
     };
 
     const results = useMemo(filterSatellites, [json, inputValue]);
-
-    const placeholder = dict[lng]['searchSatellite'];
 
     useEffect(addKeydownListeners, [isMenuOpen]);
 

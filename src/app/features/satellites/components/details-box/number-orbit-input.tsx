@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { WarningIcon } from "@chakra-ui/icons";
 
-import { T } from "../../../shared/components";
+import { T } from "../../../../shared/components";
 
 interface INumberOrbitInput {
     numberOfOrbits: number;

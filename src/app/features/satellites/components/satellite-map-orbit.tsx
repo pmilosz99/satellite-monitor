@@ -1,8 +1,10 @@
 import { FC, useEffect, useRef } from "react";
+import { Box } from "@chakra-ui/react";
 import Map from 'ol/Map';
 import Feature from "ol/Feature";
 import RenderEvent from "ol/render/Event";
 import VectorSource from "ol/source/Vector";
+import { Types } from "ol/MapBrowserEventType";
 import { Vector } from "ol/layer";
 import { transform } from "ol/proj";
 import { Coordinate } from "ol/coordinate";
@@ -29,17 +31,14 @@ import { MapComponent } from "../../../shared/components";
 import { OLMAP_ID, OL_DEFAULT_MAP_PROJECTION } from "../../../shared/consts";
 import { Satellite, TleLine1, TleLine2 } from "ootk-core";
 import { removeLayerById } from "../../../shared/utils";
-
-interface IPosition {
-    longtitude: number;
-    latitude: number;
-    height: number;
-}
+import { ISatellitePosition } from "../types";
 
 interface ISatelliteMapOrbit {
     tle: string[];
-    onSatPositionChange: (data: IPosition) => void;
+    onSatPositionChange: (data: ISatellitePosition) => void;
     numberOfOrbits?: number;
+    isTrackSat?: boolean;
+    setTrackSatOff?: () => void;
 }
 
 const satelliteStyle = new Style({
@@ -56,9 +55,15 @@ const satelliteStyle = new Style({
 const SATELLITE_LAYER_NAME = 'satellite-point-layer';
 const ORBIT_LAYER_NAME = 'orbit-line-layer';
 
-export const SatelliteMapOrbit: FC<ISatelliteMapOrbit> = ({ tle, onSatPositionChange, numberOfOrbits = 1 }) => {
+export const SatelliteMapOrbit: FC<ISatelliteMapOrbit> = ({ 
+    tle, 
+    onSatPositionChange, 
+    setTrackSatOff, 
+    numberOfOrbits = 1, 
+    isTrackSat = false, 
+}) => {
     const mapRef = useRef<Map>();
-    const positionRef = useRef<IPosition>();
+    const positionRef = useRef<ISatellitePosition>();
 
     const firstLineTle = tle[1];
     const secondLineTle = tle[2];
@@ -66,7 +71,7 @@ export const SatelliteMapOrbit: FC<ISatelliteMapOrbit> = ({ tle, onSatPositionCh
     
     const SAT_PERIOD_SECONDS = sat.period * 60;
 
-    const getSatellitePosition = (time: Date): IPosition => {
+    const getSatellitePosition = (time: Date): ISatellitePosition => {
         const satrec = twoline2satrec(firstLineTle, secondLineTle);
 
         const positionAndVelocity = propagate(satrec, time);
@@ -161,6 +166,38 @@ export const SatelliteMapOrbit: FC<ISatelliteMapOrbit> = ({ tle, onSatPositionCh
         return () => vectorLayer.un('postrender', updateSatellitePosition);
     };
 
+    const unRegisterListener = (listener: Types, fn: () => void) => {
+        if (!mapRef.current) return;
+
+        return mapRef.current.un(listener, fn)
+    };
+
+    const disabledTracker = () => {
+        if (!mapRef.current || !setTrackSatOff) return;
+
+        const trackerOff = () => {
+            setTrackSatOff();
+        };
+
+        mapRef.current.on('pointerdrag', trackerOff);
+
+        return () => unRegisterListener('pointerdrag', trackerOff);
+    };
+
+    const trackIn = (coord: Coordinate) => {
+        if (!mapRef.current) return;
+
+        mapRef.current.getView().animate({center: coord, duration: 0})
+    };
+
+    const zoomIn = () => {
+        if (!mapRef.current || !positionRef.current) return;
+
+        const transformCoords = transform([positionRef.current.longtitude, positionRef.current.latitude], 'EPSG:4326', OL_DEFAULT_MAP_PROJECTION);
+
+        isTrackSat ? mapRef.current.getView().animate({center: transformCoords, zoom: 9}) : null;
+    };
+
     const updateSatellitePosition = (event: RenderEvent): void => {
         if (!mapRef.current || !tle) return;
 
@@ -174,6 +211,9 @@ export const SatelliteMapOrbit: FC<ISatelliteMapOrbit> = ({ tle, onSatPositionCh
         const vectorContext = getVectorContext(event);
         vectorContext.setStyle(satelliteStyle);
         vectorContext.drawGeometry(point);
+
+        isTrackSat ? trackIn(transformCoords) : null;
+
         /**
          * We render geometry by vector context and hide geoMarker and trigger map render through 
          * change event (we get smooth animations when moving the map)
@@ -184,7 +224,7 @@ export const SatelliteMapOrbit: FC<ISatelliteMapOrbit> = ({ tle, onSatPositionCh
 
     const updatePositionState = (): (() => void) => {
         const interval = setInterval(() => {
-            onSatPositionChange(positionRef.current as IPosition);
+            onSatPositionChange(positionRef.current as ISatellitePosition);
         }, 1000);
 
         return () => clearInterval(interval);
@@ -193,13 +233,15 @@ export const SatelliteMapOrbit: FC<ISatelliteMapOrbit> = ({ tle, onSatPositionCh
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(drawOrbitLayer, [tle, numberOfOrbits]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    useEffect(drawSatelliteLayer, [tle]);
+    useEffect(drawSatelliteLayer, [tle, isTrackSat]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(updatePositionState, [tle]);
-
-    // useEffect(reRenderMap, [numberOfOrbits]);
+    useEffect(zoomIn, [isTrackSat]);
+    useEffect(disabledTracker, [setTrackSatOff]);
 
     return (
-        <MapComponent id="map-satellite-details-orbit" mapRef={mapRef} />
+        <Box h="100%" w="100%" borderWidth="1px">
+            <MapComponent id="map-satellite-details-orbit" mapRef={mapRef} />
+        </Box>
     );
 };

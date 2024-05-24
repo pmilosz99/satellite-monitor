@@ -3,37 +3,33 @@ import { useParams } from "react-router-dom";
 import { Satellite, TleLine1, TleLine2 } from 'ootk-core';
 import { 
     Box, 
-    Center, 
     Flex, 
-    Heading, 
-    Spacer, 
     Spinner, 
     Stack, 
-    Text 
 } from "@chakra-ui/react";
 
-import { T } from "../../../shared/components";
 import { SatelliteMapOrbit } from "../components/satellite-map-orbit";
 
 import { tle } from "../../../shared/atoms";
 import { useAtomValue } from "jotai";
 
-import { getSatelliteTle } from "../../../shared/utils/getSatelliteTle";
-import NumberOrbitInput from "../components/number-orbit-input";
+import { DetailsBox } from "../components/details-box";
 
-interface ISatellitePosition {
-    longtitude: number;
-    latitude: number;
-    height: number;
-}
+import { getSatelliteTle } from "../../../shared/utils/getSatelliteTle";
+import { ISatellitePosition } from "../types";
+
+const emptyPosition = { longtitude: 0, latitude: 0, height: 0 } as ISatellitePosition;
 
 export const SatelliteDetails = () => {
-    const { satelliteId } = useParams();
     const [positionSatellite, setPositionSatellite] = useState<ISatellitePosition>();
     const [numberOfOrbits, setNumberOfOrbits] = useState<number>(1);
+    const [isTrackSat, setIsTrackSat] = useState(false);
+    const { satelliteId } = useParams();
     const tleData = useAtomValue(tle);
 
     const singleTle = useMemo(() => getSatelliteTle(tleData || '', satelliteId || ''), [tleData, satelliteId]);   
+
+    const toggleTrackIn = () => setIsTrackSat((prev) => !prev);
 
     const onPositionChange = (data: ISatellitePosition) => {
         setPositionSatellite(data);
@@ -42,6 +38,8 @@ export const SatelliteDetails = () => {
     const onNumberInputChange = (_: string, valueAsNumber: number): void => {        
         setNumberOfOrbits(valueAsNumber);
     };
+
+    const onTrackIn = (): void => toggleTrackIn();
 
     if (!singleTle) return (
         <Flex alignItems='center' direction='column' h="100%" justifyContent="center">
@@ -54,50 +52,22 @@ export const SatelliteDetails = () => {
     return (
         <Box p={5} h="100%">
             <Stack direction="row" h="100%">
-                <Box h="100%" w="100%" borderWidth="1px">
-                    <SatelliteMapOrbit tle={singleTle} onSatPositionChange={onPositionChange} numberOfOrbits={numberOfOrbits}/>
-                </Box>
-                <Box w="50%" borderWidth="1px" borderRadius="6px" p={5  }>
-                    <Center>
-                        <Heading>
-                            <Text>{singleTle[0]}</Text>
-                        </Heading>
-                    </Center>
-                    <Center>
-                        <Box p={5} w="80%">
-                            <Flex>
-                                <Text>
-                                    <T dictKey="longtitude" />:
-                                </Text>
-                                <Spacer />
-                                <Text>{positionSatellite?.longtitude.toFixed(4)}</Text>
-                            </Flex>
-                            <Flex>
-                                <Text>
-                                    <T dictKey="latitude" />:
-                                </Text>
-                                <Spacer />
-                                <Text>{positionSatellite?.latitude.toFixed(4)}</Text>
-                            </Flex>
-                            <Flex>
-                                <Text>
-                                    <T dictKey="height" />:
-                                </Text>
-                                <Spacer />
-                                <Text>{positionSatellite?.height.toFixed(4)}</Text>
-                            </Flex>
-                            <Flex>
-                                <Text>
-                                    <T dictKey="orbitTime" />:
-                                </Text>
-                                <Spacer />
-                                <Text>{sat.period.toFixed(2)} min.</Text>
-                            </Flex>
-                            <br />
-                            <NumberOrbitInput numberOfOrbits={numberOfOrbits} satPeriod={sat.period} onChange={onNumberInputChange}/>
-                        </Box>
-                    </Center>
-                </Box>
+                <SatelliteMapOrbit 
+                    tle={singleTle} 
+                    onSatPositionChange={onPositionChange} 
+                    numberOfOrbits={numberOfOrbits} 
+                    isTrackSat={isTrackSat}
+                    setTrackSatOff={() => setIsTrackSat(false)}
+                />
+                <DetailsBox 
+                    title={singleTle[0]}
+                    positionSat={positionSatellite || emptyPosition}
+                    onNumberInputChange={onNumberInputChange}
+                    onTrack={onTrackIn}
+                    isTrackSat={isTrackSat}
+                    period={sat.period}
+                    numberOfOrbits={numberOfOrbits}
+                />
             </Stack>
         </Box>
     )
