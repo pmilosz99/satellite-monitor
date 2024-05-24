@@ -1,7 +1,8 @@
-import { useEffect } from "react";
+import { FC, PropsWithChildren, useEffect } from "react";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { useAtomValue, useSetAtom } from "jotai";
-import { ChakraProvider, useColorMode } from "@chakra-ui/react";
+import { UseQueryResult } from "@tanstack/react-query";
+import { ChakraProvider, useColorMode, useToast } from "@chakra-ui/react";
 import {
   ThemeProvider as MaterialThemeProvider,
   createTheme as muiCreateTheme,
@@ -14,6 +15,7 @@ import { Layout } from "./Layout"
 import { routes } from "./shared/routes";
 import { HomePage } from "./features/home-page";
 
+import { T } from "./shared/components";
 import { SatelliteList } from "./features/satellites/containers/satellite-list";
 import { SatelliteDetails } from "./features/satellites/containers/satellite-details";
 import { SelectLocation } from "./features/user-location/containers";
@@ -65,20 +67,13 @@ const router = createBrowserRouter([
   },
 ]);
 
-export function App() {
+const ThemeAndLngChanger: FC<PropsWithChildren> = ({ children }) => {
   const { colorMode } = useColorMode();
   const atomTheme = useAtomValue(currentTheme); 
   const atomLanguage = useAtomValue(language);
-  const setTle = useSetAtom(tle);
 
   const currLng = atomLanguage === LANGUAGE_VALUES.PL ? plPL : {};
   const materialTheme = muiCreateTheme(currLng);
-
-  const { data: tleData } = useSatellites({ GROUP: 'active', FORMAT: 'tle' });
-
-  useEffect(() => {
-    setTle(tleData as string || null);
-  }, [tleData, setTle]);
 
   /**
    * We have to use both solutions (useColorMode and atom value) 
@@ -92,9 +87,42 @@ export function App() {
   return (
     <ChakraProvider theme={theme}>
       <MaterialThemeProvider theme={{ [THEME_ID]: materialTheme }}>
-        <RouterProvider router={router} />
+        {children}
       </MaterialThemeProvider>
     </ChakraProvider>
+  )
+};
+
+export function App() {
+  const setTle = useSetAtom(tle);
+  const toast = useToast();
+
+  const tleQuery = useSatellites({ GROUP: 'active', FORMAT: 'tle' }) as  UseQueryResult<string>;
+
+  const handleFetctTleQueryError = (): void => {
+    if (tleQuery.isError) {
+      toast({
+        title: <T dictKey="fetchErrorData" />,
+        description: <T dictKey="fetchErrorDesc" />,
+        status: "error",
+        position: 'top-right',
+        duration: 10000,
+        isClosable: true,
+      })
+    }
+  };
+
+  const setGlobalTleQuery = (): void => {
+    setTle(tleQuery || null);
+  };
+
+  useEffect(setGlobalTleQuery, [tleQuery, setTle]);
+  useEffect(handleFetctTleQueryError, [tleQuery, toast]);
+
+  return (
+    <ThemeAndLngChanger>
+        <RouterProvider router={router} />
+    </ThemeAndLngChanger>
   )
 }
 

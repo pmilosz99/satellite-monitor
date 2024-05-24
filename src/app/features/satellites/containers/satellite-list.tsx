@@ -1,12 +1,13 @@
-import { FC } from "react";
-import { Box } from "@chakra-ui/react";
-import { GridColDef } from '@mui/x-data-grid'
+import { FC, useEffect } from "react";
+import { Box, useToast } from "@chakra-ui/react";
+import { GridColDef } from '@mui/x-data-grid';
 
 import { useSatellites } from "../data-access/get-satellites.query";
 
 import { CutomDataGrid } from "../../../shared/components/custom-data-grid";
 import { CustomLink } from "../../../shared/components/custom-link";
 import { routes } from "../../../shared/routes";
+import { T } from "../../../shared/components";
 
 const columns: GridColDef[] = [
     { field: 'NORAD_CAT_ID', headerName: 'Norad ID', width: 150, renderCell: (row) =>  <CustomLink to={routes.satellite.item.goTo(row.value)}>{row.value}</CustomLink>},
@@ -29,12 +30,28 @@ const columns: GridColDef[] = [
 ];
 
 interface ISatellitesList {
-    group: string
+    group: string;
 }
 
 export const SatelliteList: FC<ISatellitesList> = ({ group }) => {
+    const toast = useToast();
 
-    const { data, isLoading } = useSatellites({ GROUP: group, FORMAT: 'json' });
+    const { data, isLoading, isError } = useSatellites({ GROUP: group, FORMAT: 'json' });
+    
+    const handleFetchTleQueryError = () => {
+        if (isError) {
+            toast({
+                title: <T dictKey="fetchErrorData" />,
+                description: <T dictKey="fetchErrorDesc" />,
+                status: "error",
+                position: 'top-right',
+                duration: 10000,
+                isClosable: true,
+              })
+        }
+    };
+
+    useEffect(handleFetchTleQueryError, [isError, toast]);
 
     return (
         <Box pt={5} pr={5} pl={5} height={'100%'}>

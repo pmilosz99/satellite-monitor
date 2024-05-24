@@ -4,6 +4,7 @@ import { Satellite, TleLine1, TleLine2 } from 'ootk-core';
 import { 
     Box, 
     Flex, 
+    Heading, 
     Spinner, 
     Stack, 
 } from "@chakra-ui/react";
@@ -17,6 +18,7 @@ import { DetailsBox } from "../components/details-box";
 
 import { getSatelliteTle } from "../../../shared/utils/getSatelliteTle";
 import { ISatellitePosition } from "../types";
+import { T } from "../../../shared/components";
 
 const emptyPosition = { longtitude: 0, latitude: 0, height: 0 } as ISatellitePosition;
 
@@ -25,9 +27,9 @@ export const SatelliteDetails = () => {
     const [numberOfOrbits, setNumberOfOrbits] = useState<number>(1);
     const [isTrackSat, setIsTrackSat] = useState(false);
     const { satelliteId } = useParams();
-    const tleData = useAtomValue(tle);
+    const tleQuery = useAtomValue(tle);
 
-    const singleTle = useMemo(() => getSatelliteTle(tleData || '', satelliteId || ''), [tleData, satelliteId]);   
+    const singleTle = useMemo(() => getSatelliteTle(tleQuery?.data || '', satelliteId || ''), [tleQuery, satelliteId]);   
 
     const toggleTrackIn = () => setIsTrackSat((prev) => !prev);
 
@@ -41,9 +43,17 @@ export const SatelliteDetails = () => {
 
     const onTrackIn = (): void => toggleTrackIn();
 
-    if (!singleTle) return (
+    if (tleQuery?.isLoading) return (
         <Flex alignItems='center' direction='column' h="100%" justifyContent="center">
             <Spinner size='xl' />
+        </Flex>
+    )
+
+    if (!singleTle) return (
+        <Flex alignItems='center' direction='column' h="100%" justifyContent="center">
+            <Heading>
+                <T dictKey="notFoundSat" />
+            </Heading>
         </Flex>
     )
 

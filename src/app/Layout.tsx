@@ -30,6 +30,7 @@ import {
     Kbd,
     InputRightElement,
     useStyleConfig,
+    Spinner,
 } from "@chakra-ui/react";
 import { ChevronDownIcon, MoonIcon, SearchIcon, SunIcon } from '@chakra-ui/icons'
 import { Link as RouterLink, Outlet, To } from "react-router-dom";
@@ -223,9 +224,9 @@ const SearchBar = () => {
 
     const placeholder = useTranslation('searchSatellite') as string;
 
-    const tleData = useAtomValue(tle);
+    const tleQuery = useAtomValue(tle);
 
-    const json = getJsonTle(tleData || '');
+    const json = getJsonTle(tleQuery?.data || '');
 
     const filterSatellites = () => {
         const matchedItems = json?.filter(({ name }) => {
@@ -289,6 +290,26 @@ const SearchBar = () => {
         }
     };
 
+    const renderRightElement = () => {
+        if (tleQuery?.isLoading) return (
+            <InputRightElement pt="1px">
+                <Spinner size='sm' />
+            </InputRightElement>
+        )
+
+        if (inputValue) return (
+            <InputRightElement>
+                <CloseButton onClick={onClickCloseButton} />
+            </InputRightElement>
+        )
+        
+        return (
+            <InputRightElement width="7rem" pb='2px'>
+                <KeyboardKeySearchBarOpen />
+            </InputRightElement>
+        )
+    }
+
     const results = useMemo(filterSatellites, [json, inputValue]);
 
     useEffect(addKeydownListeners, [isMenuOpen]);
@@ -300,15 +321,7 @@ const SearchBar = () => {
                     <SearchIcon />
                 </InputLeftElement>
                 <Input ref={inputRef} variant='filled' placeholder={placeholder} onChange={handleChangeInput} value={inputValue}/>
-                {inputValue ? (
-                        <InputRightElement>
-                            <CloseButton onClick={onClickCloseButton} />
-                        </InputRightElement>
-                    ) : (
-                        <InputRightElement width="7rem" pb='2px'>
-                            <KeyboardKeySearchBarOpen />
-                        </InputRightElement>
-                    )}
+                {renderRightElement()}
             </InputGroup>
             <SearchBarMenu inputGroupRef={inputGroupRef} isOpen={isMenuOpen && !!results?.length} onClose={closeMenu} onClick={onClickMenu} items={results || []} />
         </Box>
