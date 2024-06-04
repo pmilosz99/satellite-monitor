@@ -16,6 +16,7 @@ import { routes } from "./shared/routes";
 import { HomePage } from "./features/home-page";
 
 import { T } from "./shared/components";
+import { Map2d } from "./features/map2d/containers";
 import { SatelliteList } from "./features/satellites/containers/satellite-list";
 import { SatelliteDetails } from "./features/satellites/containers/satellite-details";
 import { SelectLocation } from "./features/user-location/containers";
@@ -62,6 +63,10 @@ const router = createBrowserRouter([
       {
         path: routes.selectLocation,
         element: <SelectLocation />
+      },
+      {
+        path: routes.map,
+        element: <Map2d />
       }
     ]
   },

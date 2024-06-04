@@ -62,7 +62,6 @@ export const MapComponent: FC<IMapComponent> = ({ id, mapRef }) => {
         center: [0, 0],
         zoom: 0,
         projection: OL_DEFAULT_MAP_PROJECTION,
-        
       }),
     });
 

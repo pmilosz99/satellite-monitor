@@ -62,8 +62,12 @@ export const dict: TLngDict = {
         on: 'on',
         off: 'off',
         notFoundSat: 'Satellite not found',
-        fetchErrorDesc: 'A fetch data error has occurred. Please try again in two hour'
-
+        fetchErrorDesc: 'A fetch data error has occurred. Please try again in two hour',
+        //map2d
+        satellite: 'Satellite',
+        apogee: 'Apogee',
+        perigee: 'Perigee',
+        moreDetails: 'More details',
     },
     [LANGUAGE_VALUES.PL]: {
         //layout
@@ -118,6 +122,11 @@ export const dict: TLngDict = {
         off: 'wył',
         notFoundSat: 'Nie znaleziono satelity',
         fetchErrorData: 'Błąd pobierania danych',
-        fetchErrorDesc: 'Wystąpił błąd pobierania danych. Spróbuj ponownie za dwie godzinę'
+        fetchErrorDesc: 'Wystąpił błąd pobierania danych. Spróbuj ponownie za dwie godziny',
+        //map2d
+        satellite: 'Satelita',
+        apogee: 'Apogeum',
+        perigee: 'Perigeum',
+        moreDetails: 'Więcej szczegółów',
     }
 }

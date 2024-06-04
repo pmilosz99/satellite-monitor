@@ -1,5 +1,5 @@
 import { ChangeEvent, FC, ReactNode, RefObject, useEffect, useMemo, useRef, useState } from "react";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { 
     Box,
     Button,
@@ -39,12 +39,11 @@ import SatelliteAltOutlinedIcon from '@mui/icons-material/SatelliteAltOutlined';
 import { T } from "./shared/components";
 import { LocationDisplay } from "./features/user-location/components";
 
-import { useMap, useTranslation } from "./shared/hooks";
+import { useJsonTle, useMap, useTranslation } from "./shared/hooks";
 
-import { currentTheme, language, tle } from "./shared/atoms";
+import { currentTheme, language } from "./shared/atoms";
 import { LANGUAGE_VALUES } from "./shared/dict-translation";
 import { routes } from "./shared/routes";
-import { getJsonTle } from "./shared/utils/getJsonTle";
 
 import { MAIN_GRADIENT, MAIN_GRADIENT_COLOR, THEME_TYPE } from "./shared/themes";
 import { plFlag, gbFlag } from '../assets/icons';
@@ -221,15 +220,14 @@ const SearchBar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
     const inputGroupRef = useRef<HTMLDivElement>(null);
+    const tleJSON = useJsonTle();
 
     const placeholder = useTranslation('searchSatellite') as string;
 
-    const tleQuery = useAtomValue(tle);
-
-    const json = getJsonTle(tleQuery?.data || '');
-
     const filterSatellites = () => {
-        const matchedItems = json?.filter(({ name }) => {
+        if (!tleJSON) return;
+        
+        const matchedItems = tleJSON.data.filter(({ name }) => {
             const nameValue = name.toLowerCase();
             const searchValue = inputValue.toLowerCase();
     
@@ -291,7 +289,7 @@ const SearchBar = () => {
     };
 
     const renderRightElement = () => {
-        if (tleQuery?.isLoading) return (
+        if (tleJSON?.isLoading) return (
             <InputRightElement pt="1px">
                 <Spinner size='sm' />
             </InputRightElement>
@@ -310,7 +308,7 @@ const SearchBar = () => {
         )
     }
 
-    const results = useMemo(filterSatellites, [json, inputValue]);
+    const results = useMemo(filterSatellites, [tleJSON, inputValue]);
 
     useEffect(addKeydownListeners, [isMenuOpen]);
 
@@ -384,14 +382,17 @@ const Sidebar = () => {
                     <MenuLink to={routes.satellite.list.allSatellites}>
                         <T dictKey="activeSatellites" />
                     </MenuLink>
+                    <br />
+                    <MenuLink to={routes.map}>
+                        <Text as="b">
+                            <T dictKey="map" />
+                        </Text>
+                    </MenuLink>
                     <Text as='b' paddingTop={4}>
                         <T dictKey="futureFeatures" />
                     </Text>
                     <Text color='#b0b0b1'>
                         <T dictKey="satellitesAbove" />
-                    </Text>
-                    <Text color='#b0b0b1'>
-                        <T dictKey="map" />
                     </Text>
                     <Text color='#b0b0b1'>
                         <T dictKey="map3d" /> 
