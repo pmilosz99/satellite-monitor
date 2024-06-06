@@ -31,6 +31,7 @@ import {
     InputRightElement,
     useStyleConfig,
     Spinner,
+    Badge
 } from "@chakra-ui/react";
 import { ChevronDownIcon, MoonIcon, SearchIcon, SunIcon } from '@chakra-ui/icons'
 import { Link as RouterLink, Outlet, To } from "react-router-dom";
@@ -383,11 +384,16 @@ const Sidebar = () => {
                         <T dictKey="activeSatellites" />
                     </MenuLink>
                     <br />
-                    <MenuLink to={routes.map}>
-                        <Text as="b">
-                            <T dictKey="map" />
-                        </Text>
-                    </MenuLink>
+                    <Stack direction="row" alignItems="center">
+                        <MenuLink to={routes.map}>
+                            <Text as="b">
+                                <T dictKey="map" />
+                            </Text>
+                        </MenuLink>
+                        <Badge colorScheme='purple'>
+                            <T dictKey="new" />    
+                        </Badge> 
+                    </Stack>
                     <Text as='b' paddingTop={4}>
                         <T dictKey="futureFeatures" />
                     </Text>

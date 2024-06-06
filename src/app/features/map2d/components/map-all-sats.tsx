@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useRef } from "react";
+import { FC, useCallback, useEffect, useMemo, useRef } from "react";
 import { Box, Flex, Spinner } from "@chakra-ui/react";
 import Map from 'ol/Map';
 import VectorSource from "ol/source/Vector";
@@ -15,6 +15,7 @@ import { OLMAP_ID, OL_DEFAULT_MAP_PROJECTION } from "../../../shared/consts";
 import { createOrbitLanes, getSatellitePosition, removeLayerById } from "../../../shared/utils";
 import { getSatelliteTle } from "../../../shared/utils/getSatelliteTle";
 import { useJsonTle, useTle } from "../../../shared/hooks";
+import { Coordinate } from "ol/coordinate";
 
 const style = {
     "circle-radius": [
@@ -34,6 +35,7 @@ const style = {
       "#006688"
     ],
 }
+// import xd from '../../../shared/worker/get-sat-position.ts'
 const SATELLITES_LAYER_NAME = 'all-satellites-points-layer';
 const ORBIT_SAT_LAYER = 'all-satellites-orbit-layer';
 
@@ -44,6 +46,11 @@ interface IMapAllSats {
     isDrawerOpen: boolean;
 }
 
+type tleFromWebWorker = {
+    noradId: string;
+    coords: Coordinate;
+}
+
 export const MapAllSats: FC<IMapAllSats> = ({ setNoradId, isDrawerOpen, setOpenDrawer, setCloseDrawer }) => {
     const mapRef = useRef<Map>();
     const noradIdRef = useRef<string>();
@@ -51,6 +58,8 @@ export const MapAllSats: FC<IMapAllSats> = ({ setNoradId, isDrawerOpen, setOpenD
 
     const tle = useTle();
     const tleJSON = useJsonTle();
+
+    const worker = useMemo(() => new Worker(new URL('../../../shared/worker/get-sat-position.ts', import.meta.url), { type: "module" }), []);
 
     const drawSatellitesLayer = useCallback((): void => {
         if (!mapRef.current || !tleJSON) return;
@@ -129,18 +138,19 @@ export const MapAllSats: FC<IMapAllSats> = ({ setNoradId, isDrawerOpen, setOpenD
     const updateSourceLayer = useCallback((): void => {
         if (!tleJSON || !sourceRef.current) return;
 
-        for (let i=0; i<tleJSON.data.length; i++) {
-            const position = getSatellitePosition(new Date(), tleJSON.data[i].line1, tleJSON.data[i].line2 );
+        worker.postMessage(tleJSON.data);
 
-            if (!position) continue;
+        worker.onmessage = (event) => {
+            const newTleJSON = event.data;
 
-            const transformCoords = transform([position.longtitude, position.latitude], 'EPSG:4326', OL_DEFAULT_MAP_PROJECTION);
-
-            const feature = sourceRef.current?.getFeatureById(tleJSON.data[i].noradId);
-            const geomPoint = feature?.getGeometry() as Point;
-            geomPoint.setCoordinates(transformCoords);
+            newTleJSON.forEach((tle: tleFromWebWorker) => {
+                if (!sourceRef.current) return;
+                const feature = sourceRef.current.getFeatureById(tle.noradId);
+                const geomPoint = feature?.getGeometry() as Point;
+                geomPoint.setCoordinates(tle.coords);
+            });
         }
-    }, [tleJSON])
+    }, [tleJSON, worker])
 
     const addListenerToMap = useCallback((): (() => void) | undefined => {
         if (!mapRef.current) return;
@@ -202,7 +212,7 @@ export const MapAllSats: FC<IMapAllSats> = ({ setNoradId, isDrawerOpen, setOpenD
         const interval = setInterval(() => {
             if (!mapRef.current) return;
             updateSourceLayer();
-        }, 2000);
+        }, 1000);
 
         return () => clearInterval(interval);
     }

@@ -23,6 +23,7 @@ export const dict: TLngDict = {
         devVersion: '· Development version',
         searchSatellite: 'Search for a satellite',
         fetchErrorData: 'Data fetch error',
+        new: 'new',
         //home-page
         homePageWelcome: 'Welcome to Satellite Monitor',
         homePageDisc: `The Satellite Monitor is a hobby project to facilitate nighttime satellite observing. 
@@ -83,6 +84,7 @@ export const dict: TLngDict = {
         developedAndMainted: 'Aplikacja stworzona i utrzymywana przez ',
         devVersion: '· Wersja deweloperska',
         searchSatellite: 'Wyszukaj satelitę',
+        new: 'nowe',
         //home-page
         homePageWelcome: 'Witaj na Satellite Monitor',
         homePageDisc: `Satellite Monitor jest to hobbistyczny projekt, który umożliwa planowanie nocnych obserwacji satelitów.
