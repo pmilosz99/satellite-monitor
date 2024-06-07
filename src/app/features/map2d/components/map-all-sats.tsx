@@ -1,21 +1,20 @@
-import { FC, useCallback, useEffect, useMemo, useRef } from "react";
+import { FC, useCallback, useEffect, useRef } from "react";
 import { Box, Flex, Spinner } from "@chakra-ui/react";
 import Map from 'ol/Map';
 import VectorSource from "ol/source/Vector";
 import { LineString, Point } from "ol/geom";
-import { transform } from "ol/proj";
 import WebGLPointsLayer from "ol/layer/WebGLPoints";
 import Feature, { FeatureLike } from "ol/Feature";
 import MapBrowserEvent from "ol/MapBrowserEvent";
 import { Vector } from "ol/layer";
+import { Coordinate } from "ol/coordinate";
 import { Satellite, TleLine1, TleLine2 } from "ootk-core";
 
 import { MapComponent } from "../../../shared/components";
-import { OLMAP_ID, OL_DEFAULT_MAP_PROJECTION } from "../../../shared/consts";
-import { createOrbitLanes, getSatellitePosition, removeLayerById } from "../../../shared/utils";
+import { OLMAP_ID } from "../../../shared/consts";
+import { removeLayerById } from "../../../shared/utils";
 import { getSatelliteTle } from "../../../shared/utils/getSatelliteTle";
 import { useJsonTle, useTle } from "../../../shared/hooks";
-import { Coordinate } from "ol/coordinate";
 
 const style = {
     "circle-radius": [
@@ -31,11 +30,11 @@ const style = {
       "match",
       ["get","hover"],
       1,
-      "#ff3f3f",
-      "#006688"
+      "#00bfff",
+      "#ff3f3f"
     ],
 }
-// import xd from '../../../shared/worker/get-sat-position.ts'
+
 const SATELLITES_LAYER_NAME = 'all-satellites-points-layer';
 const ORBIT_SAT_LAYER = 'all-satellites-orbit-layer';
 
@@ -51,6 +50,7 @@ type tleFromWebWorker = {
     coords: Coordinate;
 }
 
+//TODO: sprawdzać czy user nie zmienia karty, jeśli user powraca na karte apki wyrenderować wartstwe z satelitami jeszczer raz
 export const MapAllSats: FC<IMapAllSats> = ({ setNoradId, isDrawerOpen, setOpenDrawer, setCloseDrawer }) => {
     const mapRef = useRef<Map>();
     const noradIdRef = useRef<string>();
@@ -59,42 +59,19 @@ export const MapAllSats: FC<IMapAllSats> = ({ setNoradId, isDrawerOpen, setOpenD
     const tle = useTle();
     const tleJSON = useJsonTle();
 
-    const worker = useMemo(() => new Worker(new URL('../../../shared/worker/get-sat-position.ts', import.meta.url), { type: "module" }), []);
+    const workerGetSatPosition = useRef<Worker>();
+    const workerCreateOrbitLanes = useRef<Worker>();
+    const workerGetInitSatPosition = useRef<Worker>();
 
     const drawSatellitesLayer = useCallback((): void => {
-        if (!mapRef.current || !tleJSON) return;
+        if (!workerGetInitSatPosition.current || !tleJSON || noradIdRef.current) return; // arg: noradIdRef.current => we bloking refresh layer after click on sat
 
-        const map = mapRef.current;
+        workerGetInitSatPosition.current.postMessage(tleJSON.data);
 
-        removeLayerById(map, SATELLITES_LAYER_NAME);
-
-        const featuresPoints = tleJSON.data.map((satellite) => {
-            const position = getSatellitePosition(new Date(), satellite.line1, satellite.line2 );
-
-            const transformCoords = transform([position.longtitude, position.latitude], 'EPSG:4326', OL_DEFAULT_MAP_PROJECTION);
-
-            const feature = new Feature({
-                id: satellite.noradId,
-                geometry: new Point(transformCoords)
-            });
-            feature.setId(satellite.noradId);
-
-            return feature;
-        });
-
-        sourceRef.current = new VectorSource({ features: featuresPoints });
-
-        const pointsLayer = new WebGLPointsLayer({
-            [OLMAP_ID]: SATELLITES_LAYER_NAME,
-            source: sourceRef.current,
-            style: style
-          });
-
-          map.addLayer(pointsLayer);
-    }, [tleJSON]);
+    }, [tleJSON, workerGetInitSatPosition]);
 
     const drawOrbitLayer = (noradId: string): void => {
-        if (!mapRef.current || !tle?.data) return;
+        if (!workerCreateOrbitLanes.current || !tle?.data) return;
 
         const singleTle = getSatelliteTle(tle.data, noradId);
 
@@ -102,55 +79,22 @@ export const MapAllSats: FC<IMapAllSats> = ({ setNoradId, isDrawerOpen, setOpenD
 
         const sat = new Satellite({ tle1: singleTle[1] as TleLine1, tle2: singleTle[2] as TleLine2 });
 
-        const lines = createOrbitLanes(sat.period, singleTle[1], singleTle[2]);
-
-        removeLayerById(mapRef.current, ORBIT_SAT_LAYER);
-
-        if (!lines) return;
-
-        const linesFeatures = lines.map((line) => (
-            new Feature({
-                geometry: new LineString(line)
-            })
-        ))
-
-        const vectorSource = new VectorSource({
-            features: linesFeatures,
-            wrapX: false,
-        });
-
-        const vectorLayer = new Vector({
-            [OLMAP_ID]: ORBIT_SAT_LAYER,
-            source: vectorSource,
-        });
-
-        mapRef.current.getLayers().insertAt(1, vectorLayer);
+        workerCreateOrbitLanes.current.postMessage({period: sat.period, firstLine: singleTle[1], secondLine: singleTle[2]})
     };
 
     const handleDrawerOpen = (): void => {
     if (!mapRef.current) return;
 
         if (isDrawerOpen) drawOrbitLayer(noradIdRef.current || '');
-
         if (!isDrawerOpen) removeLayerById(mapRef.current, ORBIT_SAT_LAYER);
     }
 
     const updateSourceLayer = useCallback((): void => {
-        if (!tleJSON || !sourceRef.current) return;
+        if (!tleJSON || !workerGetSatPosition.current) return;
 
-        worker.postMessage(tleJSON.data);
-
-        worker.onmessage = (event) => {
-            const newTleJSON = event.data;
-
-            newTleJSON.forEach((tle: tleFromWebWorker) => {
-                if (!sourceRef.current) return;
-                const feature = sourceRef.current.getFeatureById(tle.noradId);
-                const geomPoint = feature?.getGeometry() as Point;
-                geomPoint.setCoordinates(tle.coords);
-            });
-        }
-    }, [tleJSON, worker])
+        workerGetSatPosition.current.postMessage(tleJSON.data);
+        
+    }, [tleJSON, workerGetSatPosition])
 
     const addListenerToMap = useCallback((): (() => void) | undefined => {
         if (!mapRef.current) return;
@@ -206,7 +150,102 @@ export const MapAllSats: FC<IMapAllSats> = ({ setNoradId, isDrawerOpen, setOpenD
             map.un('pointermove', hoverChangeStyle)
             map.un('singleclick', onClickFeature);
         }
-    }, [setCloseDrawer, setNoradId, setOpenDrawer])
+    }, [setCloseDrawer, setNoradId, setOpenDrawer]);
+
+    const handleWebWorkers = (): (() => void) | undefined => {
+        if (!mapRef.current) return;
+
+        const map = mapRef.current;
+
+        workerGetInitSatPosition.current = new Worker(new URL('../../../shared/worker/get-sat-position.ts', import.meta.url), { type: "module" });
+        workerGetSatPosition.current = new Worker(new URL('../../../shared/worker/get-sat-position.ts', import.meta.url), { type: "module" });
+        workerCreateOrbitLanes.current = new Worker(new URL('../../../shared/worker/create-orbit-lanes.ts', import.meta.url), { type: "module" });
+
+        workerGetInitSatPosition.current.onmessage = (event) => {
+            const newTleJSON = event.data;
+
+            const featuresPoints = newTleJSON.map((tle: tleFromWebWorker) => {
+                const feature = new Feature({
+                    id: tle.noradId,
+                    geometry: new Point(tle.coords)
+                });
+                feature.setId(tle.noradId);
+
+                return feature;
+            })
+
+            sourceRef.current = new VectorSource({ features: featuresPoints });
+
+            const pointsLayer = new WebGLPointsLayer({
+                [OLMAP_ID]: SATELLITES_LAYER_NAME,
+                source: sourceRef.current,
+                style: style
+              });
+    
+              removeLayerById(map, SATELLITES_LAYER_NAME);
+              map.addLayer(pointsLayer);
+        }
+
+        workerGetSatPosition.current.onmessage = (event) => {
+            const newTleJSON = event.data;
+            const totalLength = newTleJSON.length; // Approximately 10k
+            const step = Math.ceil(totalLength / 10);
+
+            // Instead of multiple setTimeouts we use requestAnimationFrame for better performance
+            const updateFeatures = (start: number) => {
+                const end = Math.min(start + step, totalLength);
+
+                for (let i = start; i < end; i++) {
+                    if (!sourceRef.current) return;
+
+                    const feature = sourceRef.current.getFeatureById(newTleJSON[i].noradId);
+
+                    if (feature) {
+                        const geomPoint = feature.getGeometry() as Point;
+                        if (geomPoint) {
+                            geomPoint.setCoordinates(newTleJSON[i].coords);
+                        }
+                    }
+                }
+                if (end < totalLength) {
+                    requestAnimationFrame(() => updateFeatures(end));
+                }
+            };
+            requestAnimationFrame(() => updateFeatures(0));
+        };
+
+        workerCreateOrbitLanes.current.onmessage = (event) => {
+            const lines = event.data;
+
+            removeLayerById(map, ORBIT_SAT_LAYER);
+
+            if (!lines) return;
+
+            const linesFeatures = lines.map((line: Coordinate) => (
+                new Feature({
+                    geometry: new LineString(line)
+                })
+            ))
+
+            const vectorSource = new VectorSource({
+                features: linesFeatures,
+                wrapX: false,
+            });
+
+            const vectorLayer = new Vector({
+                [OLMAP_ID]: ORBIT_SAT_LAYER,
+                source: vectorSource,
+            });
+
+            map.getLayers().insertAt(1, vectorLayer);
+        }
+
+        return () => {
+            workerGetSatPosition.current?.terminate();
+            workerCreateOrbitLanes.current?.terminate();
+            workerGetInitSatPosition.current?.terminate();
+        }
+    };
 
     const intervalUpdateSourceLayer = (): (() => void) => {
         const interval = setInterval(() => {
@@ -216,6 +255,11 @@ export const MapAllSats: FC<IMapAllSats> = ({ setNoradId, isDrawerOpen, setOpenD
 
         return () => clearInterval(interval);
     }
+
+    useEffect(() => {
+        setTimeout(handleWebWorkers);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [sourceRef.current]);
 
     useEffect(() => {
         setTimeout(drawSatellitesLayer);
