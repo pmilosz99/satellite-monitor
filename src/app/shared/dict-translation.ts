@@ -23,6 +23,7 @@ export const dict: TLngDict = {
         devVersion: '· Development version',
         searchSatellite: 'Search for a satellite',
         fetchErrorData: 'Data fetch error',
+        new: 'new',
         //home-page
         homePageWelcome: 'Welcome to Satellite Monitor',
         homePageDisc: `The Satellite Monitor is a hobby project to facilitate nighttime satellite observing. 
@@ -62,8 +63,13 @@ export const dict: TLngDict = {
         on: 'on',
         off: 'off',
         notFoundSat: 'Satellite not found',
-        fetchErrorDesc: 'A fetch data error has occurred. Please try again in two hour'
-
+        fetchErrorDesc: 'A fetch data error has occurred. Please try again in two hour',
+        //map2d
+        satellite: 'Satellite',
+        apogee: 'Apogee',
+        perigee: 'Perigee',
+        period: 'Orbital period',
+        moreDetails: 'More details',
     },
     [LANGUAGE_VALUES.PL]: {
         //layout
@@ -79,6 +85,7 @@ export const dict: TLngDict = {
         developedAndMainted: 'Aplikacja stworzona i utrzymywana przez ',
         devVersion: '· Wersja deweloperska',
         searchSatellite: 'Wyszukaj satelitę',
+        new: 'nowe',
         //home-page
         homePageWelcome: 'Witaj na Satellite Monitor',
         homePageDisc: `Satellite Monitor jest to hobbistyczny projekt, który umożliwa planowanie nocnych obserwacji satelitów.
@@ -118,6 +125,12 @@ export const dict: TLngDict = {
         off: 'wył',
         notFoundSat: 'Nie znaleziono satelity',
         fetchErrorData: 'Błąd pobierania danych',
-        fetchErrorDesc: 'Wystąpił błąd pobierania danych. Spróbuj ponownie za dwie godzinę'
+        fetchErrorDesc: 'Wystąpił błąd pobierania danych. Spróbuj ponownie za dwie godziny',
+        //map2d
+        satellite: 'Satelita',
+        apogee: 'Apogeum',
+        perigee: 'Perigeum',
+        period: 'Okres orbitalny',
+        moreDetails: 'Więcej szczegółów',
     }
 }

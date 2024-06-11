@@ -1,5 +1,5 @@
 import { ChangeEvent, FC, ReactNode, RefObject, useEffect, useMemo, useRef, useState } from "react";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { 
     Box,
     Button,
@@ -31,20 +31,22 @@ import {
     InputRightElement,
     useStyleConfig,
     Spinner,
+    Badge
 } from "@chakra-ui/react";
 import { ChevronDownIcon, MoonIcon, SearchIcon, SunIcon } from '@chakra-ui/icons'
 import { Link as RouterLink, Outlet, To } from "react-router-dom";
 import SatelliteAltOutlinedIcon from '@mui/icons-material/SatelliteAltOutlined';
+import StorageIcon from '@mui/icons-material/Storage';
+import MapIcon from '@mui/icons-material/Map';
 
 import { T } from "./shared/components";
 import { LocationDisplay } from "./features/user-location/components";
 
-import { useMap, useTranslation } from "./shared/hooks";
+import { useJsonTle, useMap, useTranslation } from "./shared/hooks";
 
-import { currentTheme, language, tle } from "./shared/atoms";
+import { currentTheme, language } from "./shared/atoms";
 import { LANGUAGE_VALUES } from "./shared/dict-translation";
 import { routes } from "./shared/routes";
-import { getJsonTle } from "./shared/utils/getJsonTle";
 
 import { MAIN_GRADIENT, MAIN_GRADIENT_COLOR, THEME_TYPE } from "./shared/themes";
 import { plFlag, gbFlag } from '../assets/icons';
@@ -221,15 +223,14 @@ const SearchBar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
     const inputGroupRef = useRef<HTMLDivElement>(null);
+    const tleJSON = useJsonTle();
 
     const placeholder = useTranslation('searchSatellite') as string;
 
-    const tleQuery = useAtomValue(tle);
-
-    const json = getJsonTle(tleQuery?.data || '');
-
     const filterSatellites = () => {
-        const matchedItems = json?.filter(({ name }) => {
+        if (!tleJSON) return;
+        
+        const matchedItems = tleJSON.data.filter(({ name }) => {
             const nameValue = name.toLowerCase();
             const searchValue = inputValue.toLowerCase();
     
@@ -291,7 +292,7 @@ const SearchBar = () => {
     };
 
     const renderRightElement = () => {
-        if (tleQuery?.isLoading) return (
+        if (tleJSON?.isLoading) return (
             <InputRightElement pt="1px">
                 <Spinner size='sm' />
             </InputRightElement>
@@ -310,7 +311,7 @@ const SearchBar = () => {
         )
     }
 
-    const results = useMemo(filterSatellites, [json, inputValue]);
+    const results = useMemo(filterSatellites, [tleJSON, inputValue]);
 
     useEffect(addKeydownListeners, [isMenuOpen]);
 
@@ -366,9 +367,12 @@ const Sidebar = () => {
         <chakra.nav height="100%" width="100%">
             <Stack direction='row' h='100%' w='100%' paddingLeft={4} paddingBottom={2.5} paddingTop={2.5}>
                 <Container centerContent p={0} pt={4}>
-                    <Text as='b'>
-                        <T dictKey="database" />
-                    </Text>
+                    <Stack direction="row" alignItems="center">
+                        <StorageIcon fontSize="small"/>
+                        <Text as='b' mr={5}>
+                            <T dictKey="database" />
+                        </Text>
+                    </Stack>
                     <MenuLink to={routes.satellite.list.starlink}>
                         Starlink
                     </MenuLink>
@@ -384,14 +388,23 @@ const Sidebar = () => {
                     <MenuLink to={routes.satellite.list.allSatellites}>
                         <T dictKey="activeSatellites" />
                     </MenuLink>
+                    <br />
+                    <Stack direction="row" alignItems="center">
+                        <MapIcon fontSize="small" />
+                        <MenuLink to={routes.map}>
+                            <Text as="b">
+                                <T dictKey="map" />
+                            </Text>
+                        </MenuLink>
+                        <Badge colorScheme='purple'>
+                            <T dictKey="new" />    
+                        </Badge> 
+                    </Stack>
                     <Text as='b' paddingTop={4}>
                         <T dictKey="futureFeatures" />
                     </Text>
                     <Text color='#b0b0b1'>
                         <T dictKey="satellitesAbove" />
-                    </Text>
-                    <Text color='#b0b0b1'>
-                        <T dictKey="map" />
                     </Text>
                     <Text color='#b0b0b1'>
                         <T dictKey="map3d" /> 

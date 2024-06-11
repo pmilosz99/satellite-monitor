@@ -46,6 +46,18 @@ const darkThemeValues ={
         },
       }
     },
+    DrawerSatDetails: {
+      baseStyle: {
+        bg: 'var(--chakra-colors-chakra-body-bg)',
+        borderLeftRadius: 'md',
+        borderLeft: '1px',
+        borderLeftColor: 'whiteAlpha.300',
+        borderTop: '1px',
+        borderTopColor: 'whiteAlpha.300',
+        borderBottom: '1px',
+        borderBottomColor: 'whiteAlpha.300',
+      }
+    }
   }
 }
 
@@ -94,6 +106,18 @@ const lightThemeValues = {
         }
       }
     },
+    DrawerSatDetails: {
+      baseStyle: {
+        bg: 'var(--chakra-colors-chakra-body-bg)',
+        borderLeftRadius: 'md',
+        borderLeft: '1px',
+        borderLeftColor: 'gray.200',
+        borderTop: '1px',
+        borderTopColor: 'gray.200',
+        borderBottom: '1px',
+        borderBottomColor: 'gray.200',
+      }
+    }
   }
 }
 
