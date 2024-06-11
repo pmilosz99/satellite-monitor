@@ -41,6 +41,9 @@ export const DrawerSatDetails: FC<IDrawerSatDetails> = ({ isOpen, onClose, norad
                 <Text>
                     <T dictKey="perigee" />: {sat.perigee.toFixed(2)}
                 </Text>
+                <Text>
+                    <T dictKey="period" />: {sat.period.toFixed(2)} min.
+                </Text>
                 <Button mt={2.5} onClick={() => navigate(routes.satellite.item.goTo(noradId))}>
                     <T dictKey="moreDetails" />
                 </Button>
@@ -52,9 +55,9 @@ export const DrawerSatDetails: FC<IDrawerSatDetails> = ({ isOpen, onClose, norad
         <AnimatePresence>
             {isOpen && (
                 <motion.div
-                    initial={{ translateX: '110%', opacity: 0.4 }}
-                    animate={{ translateX: '0%' , opacity: 1 }}
-                    exit={{ translateX: '110%', opacity: 0.4 }}
+                    initial={{ translateX: '110%' }}
+                    animate={{ translateX: '0%' }}
+                    exit={{ translateX: '110%' }}
                     transition={{ ease: [0.1, 0.8, 0.9, 1.0]}}
                     style={{
                         position: 'fixed',
