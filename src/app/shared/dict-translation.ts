@@ -68,6 +68,7 @@ export const dict: TLngDict = {
         satellite: 'Satellite',
         apogee: 'Apogee',
         perigee: 'Perigee',
+        period: 'Orbital period',
         moreDetails: 'More details',
     },
     [LANGUAGE_VALUES.PL]: {
@@ -129,6 +130,7 @@ export const dict: TLngDict = {
         satellite: 'Satelita',
         apogee: 'Apogeum',
         perigee: 'Perigeum',
+        period: 'Okres orbitalny',
         moreDetails: 'Więcej szczegółów',
     }
 }

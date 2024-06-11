@@ -36,6 +36,8 @@ import {
 import { ChevronDownIcon, MoonIcon, SearchIcon, SunIcon } from '@chakra-ui/icons'
 import { Link as RouterLink, Outlet, To } from "react-router-dom";
 import SatelliteAltOutlinedIcon from '@mui/icons-material/SatelliteAltOutlined';
+import StorageIcon from '@mui/icons-material/Storage';
+import MapIcon from '@mui/icons-material/Map';
 
 import { T } from "./shared/components";
 import { LocationDisplay } from "./features/user-location/components";
@@ -365,9 +367,12 @@ const Sidebar = () => {
         <chakra.nav height="100%" width="100%">
             <Stack direction='row' h='100%' w='100%' paddingLeft={4} paddingBottom={2.5} paddingTop={2.5}>
                 <Container centerContent p={0} pt={4}>
-                    <Text as='b'>
-                        <T dictKey="database" />
-                    </Text>
+                    <Stack direction="row" alignItems="center">
+                        <StorageIcon fontSize="small"/>
+                        <Text as='b' mr={5}>
+                            <T dictKey="database" />
+                        </Text>
+                    </Stack>
                     <MenuLink to={routes.satellite.list.starlink}>
                         Starlink
                     </MenuLink>
@@ -385,6 +390,7 @@ const Sidebar = () => {
                     </MenuLink>
                     <br />
                     <Stack direction="row" alignItems="center">
+                        <MapIcon fontSize="small" />
                         <MenuLink to={routes.map}>
                             <Text as="b">
                                 <T dictKey="map" />

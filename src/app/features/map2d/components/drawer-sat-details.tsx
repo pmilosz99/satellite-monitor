@@ -41,6 +41,9 @@ export const DrawerSatDetails: FC<IDrawerSatDetails> = ({ isOpen, onClose, norad
                 <Text>
                     <T dictKey="perigee" />: {sat.perigee.toFixed(2)}
                 </Text>
+                <Text>
+                    <T dictKey="period" />: {sat.period.toFixed(2)} min.
+                </Text>
                 <Button mt={2.5} onClick={() => navigate(routes.satellite.item.goTo(noradId))}>
                     <T dictKey="moreDetails" />
                 </Button>
