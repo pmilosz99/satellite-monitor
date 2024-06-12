@@ -1,0 +1,1 @@
+export { SettingsModuleItem } from './settings-module-item';

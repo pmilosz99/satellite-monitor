@@ -1,5 +1,6 @@
 import { FC, useCallback, useEffect, useRef } from "react";
 import { Box, Flex, Spinner } from "@chakra-ui/react";
+import { useAtomValue } from "jotai";
 import Map from 'ol/Map';
 import VectorSource from "ol/source/Vector";
 import { LineString, Point } from "ol/geom";
@@ -15,6 +16,9 @@ import { OLMAP_ID } from "../../../shared/consts";
 import { removeLayerById } from "../../../shared/utils";
 import { getSatelliteTle } from "../../../shared/utils/getSatelliteTle";
 import { useJsonTle, useTle } from "../../../shared/hooks";
+
+import { settingsValues } from "../../../shared/atoms";
+import { SETTINGS_VALUES } from "../../../shared/types";
 
 const style = {
     "circle-radius": [
@@ -37,7 +41,6 @@ const style = {
 
 const SATELLITES_LAYER_NAME = 'all-satellites-points-layer';
 const ORBIT_SAT_LAYER = 'all-satellites-orbit-layer';
-const REFRESH_SAT_POSITION_MS = 1500;
 
 interface IMapAllSats {
     setNoradId: (id: string) => void;
@@ -66,6 +69,8 @@ export const MapAllSats: FC<IMapAllSats> = ({ setNoradId, isDrawerOpen, setOpenD
     const selectedFeature = useRef<Feature<Point> | null>(null);
 
     const interval = useRef<number>();
+
+    const { [SETTINGS_VALUES.REFRESH_SAT_MS]: REFRESH_SAT_POSITION_MS } = useAtomValue(settingsValues);
 
     const drawSatellitesLayer = useCallback((): void => {
         if (!workerGetInitSatPosition.current || !tleJSON || !mapRef.current || noradIdRef.current ) return; // arg: noradIdRef.current => we bloking refresh layer after click on sat
@@ -264,7 +269,7 @@ export const MapAllSats: FC<IMapAllSats> = ({ setNoradId, isDrawerOpen, setOpenD
         interval.current = setInterval(() => {
             updateSourceLayer();
         }, REFRESH_SAT_POSITION_MS);
-    }, [updateSourceLayer]);
+    }, [updateSourceLayer, REFRESH_SAT_POSITION_MS]);
 
     const removeIntervalUpdateSourceLayer = () => clearInterval(interval.current);
 

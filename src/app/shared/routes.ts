@@ -17,4 +17,5 @@ export const routes = {
     selectLocation: 'select-location',
     satellitesAbove: 'satellites-above',
     map: 'map',
+    settings: 'settings',
 };

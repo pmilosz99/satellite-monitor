@@ -38,6 +38,7 @@ import { Link as RouterLink, Outlet, To } from "react-router-dom";
 import SatelliteAltOutlinedIcon from '@mui/icons-material/SatelliteAltOutlined';
 import StorageIcon from '@mui/icons-material/Storage';
 import MapIcon from '@mui/icons-material/Map';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 import { T } from "./shared/components";
 import { LocationDisplay } from "./features/user-location/components";
@@ -365,7 +366,7 @@ const MenuLink = ({ to, children }: {to: To, children: ReactNode }) => (
 const Sidebar = () => {
     return (
         <chakra.nav height="100%" width="100%">
-            <Stack direction='row' h='100%' w='100%' paddingLeft={4} paddingBottom={2.5} paddingTop={2.5}>
+            <Stack direction='row' h='100%' w='100%' paddingLeft={4} paddingTop={2.5}>
                 <Container centerContent p={0} pt={4}>
                     <Stack direction="row" alignItems="center">
                         <StorageIcon fontSize="small"/>
@@ -409,6 +410,15 @@ const Sidebar = () => {
                     <Text color='#b0b0b1'>
                         <T dictKey="map3d" /> 
                     </Text>
+                    <Spacer />
+                    <Stack direction="row" alignItems="center" pb={2}>
+                        <SettingsIcon />
+                        <MenuLink to={routes.settings}>
+                            <Text as="b">
+                                <T dictKey="settings" />
+                            </Text>
+                        </MenuLink>
+                    </Stack>
                 </Container>
                 <Spacer />
                 <Divider orientation='vertical' />
