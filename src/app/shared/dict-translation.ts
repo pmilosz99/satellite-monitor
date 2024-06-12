@@ -70,6 +70,12 @@ export const dict: TLngDict = {
         perigee: 'Perigee',
         period: 'Orbital period',
         moreDetails: 'More details',
+        //settings
+        settings: 'Settings',
+        settingsApp: 'Application settings',
+        settingsSaved: 'Settings successfully saved',
+        settingsDescIssuseRefresh: 'If you are experiencing performance issues when viewing the map, we recommend reducing the refresh rate.',
+        settingsRefreshLabel: 'Refresh of satellite position in milliseconds',
     },
     [LANGUAGE_VALUES.PL]: {
         //layout
@@ -132,5 +138,11 @@ export const dict: TLngDict = {
         perigee: 'Perigeum',
         period: 'Okres orbitalny',
         moreDetails: 'Więcej szczegółów',
+        //settings
+        settings: 'Ustawienia',
+        settingsApp: 'Ustawienia aplikacji',
+        settingsSaved: 'Ustawienia zapisano pomyślnie',
+        settingsDescIssuseRefresh: 'Jeśli masz problemy z wydajnością podczas przeglądania mapy zmniejsz częstotliwość odświeżania',
+        settingsRefreshLabel: 'Odświeżanie pozycji satelitów w milisekundach',
     }
 }

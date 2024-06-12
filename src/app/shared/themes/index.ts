@@ -57,11 +57,29 @@ const darkThemeValues ={
         borderBottom: '1px',
         borderBottomColor: 'whiteAlpha.300',
       }
-    }
+    },
+    InfoMinimalismGrayBox: {
+      baseStyle: {
+        color: 'whiteAlpha.500'
+      }
+    },
+    SettingsModuleItem: {
+      baseStyle: {
+        bg: 'whiteAlpha.50',
+        borderRadius: 'md',
+      }
+    },
   }
 }
 
 const lightThemeValues = {
+  semanticTokens: {
+    colors: {
+      'chakra-body-text': {
+        _light: 'gray.700'
+      }
+    }
+  },
   components: {
     Alert: {
       baseStyle: {
@@ -117,6 +135,17 @@ const lightThemeValues = {
         borderBottom: '1px',
         borderBottomColor: 'gray.200',
       }
+    },
+    InfoMinimalismGrayBox: {
+      baseStyle: {
+        color: 'blackAlpha.500'
+      }
+    },
+    SettingsModuleItem: {
+      baseStyle: {
+        bg: 'gray.100',
+        borderRadius: 'md',
+      }
     }
   }
 }
@@ -129,3 +158,4 @@ export const config: ThemeConfig  = {
 export const darkTheme = extendTheme({ ...darkThemeValues, config: config });
 
 export const lightTheme = extendTheme({ ...lightThemeValues, config: config });
+console.log(lightTheme)
