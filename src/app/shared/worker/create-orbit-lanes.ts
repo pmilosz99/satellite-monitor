@@ -2,14 +2,31 @@ import { transform } from "ol/proj";
 import { getSatellitePosition } from "../utils";
 import { OL_DEFAULT_MAP_PROJECTION } from "../consts";
 
-const computePeriod = (period: number) => {
-    if (period > 500) return period;
-
-    return period * 60;
+interface IWorkerCreateOrbitOnMessage {
+    period: number;
+    firstLine: string;
+    secondLine: string;
+    numberOfOrbits: number;
 }
 
-self.onmessage = (event) => {
-    const { period, firstLine, secondLine } = event.data;
+const PERIOD_LIMIT = 500; 
+
+const calculatePeriod = (period: number) => {
+    if (period > PERIOD_LIMIT) return period;
+
+    return period * 60;
+};
+
+const calculateTime = (period: number, step: number) => {
+    if (period > PERIOD_LIMIT) {
+        return new Date(new Date().setMinutes(new Date().getMinutes() + step)); // return time in seconds
+    }
+
+    return new Date(new Date().setSeconds(new Date().getSeconds() + step)); // return time in minutes
+}
+
+self.onmessage = (event: MessageEvent<IWorkerCreateOrbitOnMessage>) => {
+    const { period, firstLine, secondLine, numberOfOrbits = 1 } = event.data;
 
     const arrCoords = [];
     const lines = [];
@@ -17,13 +34,13 @@ self.onmessage = (event) => {
     let currentTime = new Date();
     let startNewLineIndex = 0;
 
-    const PERIOD_VALUE = computePeriod(period);
+    const PERIOD_VALUE = calculatePeriod(period);
 
-    for(let i=0; i < PERIOD_VALUE; i++) {
+    for(let i=0; i < numberOfOrbits * PERIOD_VALUE; i++) {
         const { longtitude, latitude } = getSatellitePosition(currentTime, firstLine, secondLine);//create points (sat position)
         const transformCoords = transform([longtitude, latitude], 'EPSG:4326', OL_DEFAULT_MAP_PROJECTION);
 
-        currentTime = new Date(new Date().setSeconds(new Date().getSeconds() + i)); //adding 1 sec to the time needed to calculate the sat position
+        currentTime = calculateTime(period, i) //adding 1 sec or 1 minutes to the time needed to calculate the sat position
 
         arrCoords.push(transformCoords);
 

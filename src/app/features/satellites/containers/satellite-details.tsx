@@ -8,6 +8,7 @@ import {
     Spinner, 
     Stack, 
 } from "@chakra-ui/react";
+import debounce from 'lodash.debounce';
 
 import { SatelliteMapOrbit } from "../components/satellite-map-orbit";
 
@@ -37,9 +38,9 @@ export const SatelliteDetails = () => {
         setPositionSatellite(data);
     };
 
-    const onNumberInputChange = (_: string, valueAsNumber: number): void => {        
-        setNumberOfOrbits(valueAsNumber);
-    };
+    const onNumberInputChange = useMemo(() => debounce((event) => {
+        setNumberOfOrbits(event);
+    }, 300), []);
 
     const onTrackIn = (): void => toggleTrackIn();
 

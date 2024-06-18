@@ -1,4 +1,5 @@
 import { FC, useEffect, useRef } from "react";
+import { useSetAtom } from "jotai";
 import { Box } from "@chakra-ui/react";
 import Map from 'ol/Map';
 import Feature from "ol/Feature";
@@ -32,6 +33,7 @@ import { OLMAP_ID, OL_DEFAULT_MAP_PROJECTION } from "../../../shared/consts";
 import { Satellite, TleLine1, TleLine2 } from "ootk-core";
 import { removeLayerById } from "../../../shared/utils";
 import { ISatellitePosition } from "../types";
+import { isDrawOrbitLayerLoading } from "../../../shared/atoms";
 
 interface ISatelliteMapOrbit {
     tle: string[];
@@ -64,12 +66,13 @@ export const SatelliteMapOrbit: FC<ISatelliteMapOrbit> = ({
 }) => {
     const mapRef = useRef<Map>();
     const positionRef = useRef<ISatellitePosition>();
+    const workerCreateOrbitLanes = useRef<Worker>();
 
     const firstLineTle = tle[1];
     const secondLineTle = tle[2];
     const sat = new Satellite({ tle1: firstLineTle as TleLine1, tle2: secondLineTle as TleLine2 });
-    
-    const SAT_PERIOD_SECONDS = sat.period * 60;
+
+    const setIsLoading = useSetAtom(isDrawOrbitLayerLoading);
 
     const getSatellitePosition = (time: Date): ISatellitePosition => {
         const satrec = twoline2satrec(firstLineTle, secondLineTle);
@@ -87,64 +90,38 @@ export const SatelliteMapOrbit: FC<ISatelliteMapOrbit> = ({
         return { longtitude, latitude, height };
     };
 
-    const createLines = (): Coordinate[][] => { //TODO: add calculation to Web Workers
-        const arrCoords = [];
-        const lines = [];
-        let currentTime = new Date();
-        let startNewLineIndex = 0;
-
-        for(let i=0; i < numberOfOrbits * SAT_PERIOD_SECONDS; i++) {
-            const { longtitude, latitude } = getSatellitePosition(currentTime);//create points (sat position)
-            const transformCoords = transform([longtitude, latitude], 'EPSG:4326', OL_DEFAULT_MAP_PROJECTION);
-            currentTime = new Date(new Date().setSeconds(new Date().getSeconds() + i)); //adding 1 sec to the time needed to calculate the sat position
-
-            arrCoords.push(transformCoords);
-
-            if ((arrCoords[i-1]?.[0] > arrCoords[i]?.[0]) && (arrCoords[i]?.[0] > 20000000 || arrCoords[i]?.[0] < -20000000)) {//satellite going from WEST TO EAST
-                const line = arrCoords.slice(startNewLineIndex, i);//split line on the map border -180/180 degree
-
-                startNewLineIndex = i;
-
-                lines.push(line);
-            }
-
-            if ((arrCoords[i-1]?.[0] < arrCoords[i]?.[0]) && (arrCoords[i]?.[0] > 20000000 || arrCoords[i]?.[0] < -20000000)) {//satellite going from EAST TO WEST
-                const line = arrCoords.slice(startNewLineIndex, i);//split line on the map border -180/180 degree
-
-                startNewLineIndex = i;
-
-                lines.push(line);
-            }
-        }
-        lines.push(arrCoords.slice(startNewLineIndex, arrCoords.length)); 
-
-        return lines;
-    } 
-
     const drawOrbitLayer = (): void => {
-        if (!mapRef.current || !tle) return;
+        if (!mapRef.current || !tle || !workerCreateOrbitLanes.current) return;
 
-        const lines = createLines();
+        const map = mapRef.current;
 
-        removeLayerById(mapRef.current, ORBIT_LAYER_NAME);
+        setIsLoading(true);
+        workerCreateOrbitLanes.current.postMessage({period: sat.period, firstLine: firstLineTle, secondLine: secondLineTle, numberOfOrbits })
 
-        const linesFeatures = lines.map((line) => (
-            new Feature({
-                geometry: new LineString(line)
-            })
-        ))
+        workerCreateOrbitLanes.current.onmessage = (event: MessageEvent<Coordinate[]>) => {
+            const lines = event.data;
 
-        const vectorSource = new VectorSource({
-            features: linesFeatures,
-            wrapX: false,
-        });
+            removeLayerById(map, ORBIT_LAYER_NAME);
 
-        const vectorLayer = new Vector({
-            [OLMAP_ID]: ORBIT_LAYER_NAME,
-            source: vectorSource,
-        });
+            const linesFeatures = lines.map((line) => (
+                new Feature({
+                    geometry: new LineString(line)
+                })
+            ))
+    
+            const vectorSource = new VectorSource({
+                features: linesFeatures,
+                wrapX: false,
+            });
+    
+            const vectorLayer = new Vector({
+                [OLMAP_ID]: ORBIT_LAYER_NAME,
+                source: vectorSource,
+            });
 
-        mapRef.current.getLayers().insertAt(1, vectorLayer);
+            map.getLayers().insertAt(1, vectorLayer);
+            setIsLoading(false);
+        }
     };
 
     const drawSatelliteLayer = (): (() => void) | undefined => {
@@ -230,6 +207,13 @@ export const SatelliteMapOrbit: FC<ISatelliteMapOrbit> = ({
         return () => clearInterval(interval);
     };
 
+    const handleWebWorker = () => {
+        workerCreateOrbitLanes.current = new Worker(new URL('../../../shared/worker/create-orbit-lanes.ts', import.meta.url), { type: "module" });
+
+        return () => workerCreateOrbitLanes.current?.terminate();
+    };
+
+    useEffect(handleWebWorker, []);
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(drawOrbitLayer, [tle, numberOfOrbits]);
     // eslint-disable-next-line react-hooks/exhaustive-deps

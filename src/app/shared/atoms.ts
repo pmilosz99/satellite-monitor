@@ -23,3 +23,5 @@ export const map = atom<Map | null>(null);
 export const settingsValues = atomWithStorage<ISettingsValuesAtom>('settingsValues', {
     [SETTINGS_VALUES.REFRESH_SAT_MS]: 1500,
 }, undefined, { getOnInit: true } );
+
+export const isDrawOrbitLayerLoading = atom<boolean>(false);

@@ -1,4 +1,5 @@
 import { FC } from "react";
+import { useAtomValue } from "jotai";
 import { 
     Box, 
     Flex, 
@@ -10,12 +11,14 @@ import {
     ScaleFade, 
     SimpleGrid, 
     Spacer, 
+    Spinner, 
     Text, 
     Tooltip
 } from "@chakra-ui/react";
 import { WarningIcon } from "@chakra-ui/icons";
 
 import { T } from "../../../../shared/components";
+import { isDrawOrbitLayerLoading } from "../../../../shared/atoms";
 
 interface INumberOrbitInput {
     numberOfOrbits: number;
@@ -24,6 +27,8 @@ interface INumberOrbitInput {
 }
 
 export const NumberOrbitInput: FC<INumberOrbitInput> = ({ numberOfOrbits, satPeriod, onChange }) => {
+    const isLoading = useAtomValue(isDrawOrbitLayerLoading);
+
     return (
         <SimpleGrid columns={2}>
             <Flex alignItems="center">
@@ -31,6 +36,7 @@ export const NumberOrbitInput: FC<INumberOrbitInput> = ({ numberOfOrbits, satPer
                     <T dictKey="numberOrbit"/>:
                 </Text>
                 <Spacer />
+                {isLoading ? <Spinner size="sm" ml={2} mr={2} mt={1}/> : null}
                 {numberOfOrbits > 4 && (
                     <Tooltip label={<T dictKey="warningNumberOrbit"/>}>
                         <ScaleFade initialScale={0.1} in={true} >
@@ -40,7 +46,7 @@ export const NumberOrbitInput: FC<INumberOrbitInput> = ({ numberOfOrbits, satPer
                 )}
             </Flex>
             <Box>
-                <NumberInput defaultValue={1} min={1} max={10} onChange={onChange}>
+                <NumberInput defaultValue={1} min={1} max={100} onChange={onChange} isDisabled={isLoading}>
                 <NumberInputField />
                 <NumberInputStepper>
                     <NumberIncrementStepper />

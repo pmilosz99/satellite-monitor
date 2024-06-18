@@ -22,6 +22,7 @@
     "framer-motion": "^11.0.20",
     "jotai": "^2.8.0",
     "localforage": "^1.10.0",
+    "lodash.debounce": "^4.0.8",
     "match-sorter": "^6.3.4",
     "ol": "^9.1.0",
     "ootk-core": "^1.2.2",
@@ -33,6 +34,7 @@
     "sort-by": "^1.2.0"
   },
   "devDependencies": {
+    "@types/lodash.debounce": "^4.0.9",
     "@types/proj4": "^2.5.5",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
