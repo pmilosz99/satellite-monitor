@@ -26,11 +26,11 @@ export const dict: TLngDict = {
         new: 'new',
         //home-page
         homePageWelcome: 'Welcome to Satellite Monitor',
-        homePageDisc: `The Satellite Monitor is a hobby project to facilitate nighttime satellite observing. 
-        This application allows you to browse databases of active satellites and, most importantly, 
-        view the satellites that are actually passing overhead so that you can accurately plan your nightly 
-        satellite observations. In the future, detailed satellite information and a map with the orbits 
-        of the satellites will be added together with a 3d map.`,
+        homePageDisc: ` Satellite Monitor is a hobby project that enables the planning of night-time satellite observations. 
+        This application allows users to browse databases of active satellites and view all satellites currently in orbit on a 2D map. 
+        On the map, you can click on a specific satellite to view its orbit and see basic information. 
+        You can also access detailed information about a particular satellite or search for it using the search function. 
+        In the future, features such as satellite flyovers for a given location and a 3D map will be added.`,
         //user-location
         yourLocation: 'Your location',
         location: 'Location',
@@ -95,9 +95,9 @@ export const dict: TLngDict = {
         //home-page
         homePageWelcome: 'Witaj na Satellite Monitor',
         homePageDisc: `Satellite Monitor jest to hobbistyczny projekt, który umożliwa planowanie nocnych obserwacji satelitów.
-        Ta aplikacja pozwala na przeglądanie baz danych aktywnych satelitów oraz co najważniejsze, przeglądać satelity, które
-        akurat przelatują nad naszymi głowami, więc możesz planować nocne obserwacje satelitów. W przyszłości zostaną dodane takie funkcje jak
-        mapa wraz z orbitami satelitów a także mapa 3D.`,
+        Ta aplikacja pozwala na przeglądanie baz danych aktywnych satelitów oraz wszystkich satelitów znajdujących się na orbicie na mapie 2D. 
+        Na mapie możesz kliknąć na danego satelitę aby podejrzeć orbitę i zobaczyć podstawowe informację. 
+        Możesz także przejść do szczegółów danego satelity lub wyszukać go za pomocą wyszukiwarki. W przyszłości zostaną dodane takie funkcje jak przeloty satelitów dla danej lokalizacji oraz mapa 3D.`,
         //user-location
         yourLocation: 'Twoja lokalizacja',
         location: 'Lokalizacja',

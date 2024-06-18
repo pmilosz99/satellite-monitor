@@ -116,6 +116,8 @@ export const MapAllSats: FC<IMapAllSats> = ({ setNoradId, isDrawerOpen, setOpenD
 
         const sat = new Satellite({ tle1: singleTle[1] as TleLine1, tle2: singleTle[2] as TleLine2 });
 
+        workerCreateOrbitLanes.current.postMessage({period: sat.period, firstLine: singleTle[1], secondLine: singleTle[2]});
+
         workerCreateOrbitLanes.current.onmessage = (event) => {
             const lines = event.data;
 
@@ -141,10 +143,6 @@ export const MapAllSats: FC<IMapAllSats> = ({ setNoradId, isDrawerOpen, setOpenD
 
             map.getLayers().insertAt(1, vectorLayer);
         }
-
-        workerCreateOrbitLanes.current.postMessage({period: sat.period, firstLine: singleTle[1], secondLine: singleTle[2]});
-
-
     };
 
     const handleDrawerOpen = (): void => {
