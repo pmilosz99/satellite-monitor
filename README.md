@@ -118,7 +118,7 @@ The position update frequency is adjustable in the application settings, with a 
 
 ### Frontend Optimization
 
-To display a large number of objects (10k) on a 2D map using OpenLayers, we utilized the WebGLPointsLayer, which leverages the GPU for rendering. This approach enables high rendering performance and reduces the load on the browser's main thread. Since position updates occur at regular intervals, position calculations and orbit drawing were moved to Web Workers, further offloading the main thread. Additionally, we optimized coordinate updates by splitting tasks into smaller chunks using requestAnimationFrame(). Only 1/10 of all objects are updated per frame, so it takes 10 frames to update all objects. This reduces the update time per frame (from ~200ms to ~22ms), thereby enhancing application smoothness.
+To display a large number of objects (10k) on a 2D map using OpenLayers, we utilized the `WebGLPointsLayer`, which leverages the GPU for rendering. This approach enables high rendering performance and reduces the load on the browser's main thread. Since position updates occur at regular intervals, position calculations and orbit drawing were moved to Web Workers, further offloading the main thread. Additionally, we optimized coordinate updates by splitting tasks into smaller chunks using `requestAnimationFrame()`. Only 1/10 of all objects are updated per frame, so it takes 10 frames to update all objects. This reduces the update time per frame (from ~200ms to ~22ms), thereby enhancing application smoothness.
 
 Algorithm for splitting tasks:
 ```
