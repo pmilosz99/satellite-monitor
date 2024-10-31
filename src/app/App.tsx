@@ -10,8 +10,6 @@ import {
 } from '@mui/material/styles';
 import { plPL } from "@mui/material/locale";
 
-import { Layout } from "./Layout"
-
 import { routes } from "./shared/routes";
 import { HomePage } from "./features/home-page";
 
@@ -28,10 +26,12 @@ import { LANGUAGE_VALUES } from "./shared/dict-translation";
 import { useSatellites } from "./features/satellites/data-access";
 import { Settings } from "./features/settings/containers";
 
+import { CurrentLayout } from "./Layouts";
+
 const router = createBrowserRouter([
   {
     path: routes.home,
-    element: <Layout />,
+    element: <CurrentLayout />,
     children: [
       {
         index: true,
