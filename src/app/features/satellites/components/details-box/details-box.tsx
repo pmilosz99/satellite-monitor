@@ -61,7 +61,7 @@ export const DetailsBox: FC<IDetailsBox> = ({
                 </Heading>
             </Center>
             <Center>
-                <Box p={isMobile ? 4 : 5} w={isMobile ? '100%' : '80%'}>
+                <Box p={isMobile ? 1 : 5} w={isMobile ? '100%' : '80%'}>
                     <DetailsBoxData positionSat={positionSat} period={period} />
                     <br />
                     <NumberOrbitInput numberOfOrbits={numberOfOrbits} satPeriod={period} onChange={onNumberInputChange}/>

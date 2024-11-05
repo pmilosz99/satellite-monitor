@@ -88,7 +88,7 @@ export const dict: TLngDict = {
         futureFeatures: 'Przyszłe funkcje',
         map: 'Mapa',
         map3d: 'Mapa 3D',
-        developedAndMainted: 'Aplikacja stworzona i utrzymywana przez ',
+        developedAndMainted: 'Aplikacja stworzona przez ',
         devVersion: '· Wersja deweloperska',
         searchSatellite: 'Wyszukaj satelitę',
         new: 'nowe',

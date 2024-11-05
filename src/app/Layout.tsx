@@ -115,16 +115,13 @@ const HamburgerMenu = () => {
 const MobileHeader = () => (
     <chakra.header height="100%" width="100%">
         <Flex direction="column" height="100%" width="100%">
-            <Flex h={'100%'} w='100%'>
+            <Flex h='100%' w='100%'>
                 <Center>
-                    <Logo pl={5} pr={5} pt={1} pb={1}/>
+                    <Logo pl={2} pr={2} pt={1} pb={1}/>
                 </Center>
-                <Box h={'100%'} p={'10px 0 10px 0'} >
-                    <Divider orientation='vertical' />
-                </Box>
                 <Spacer />
                 <Center>
-                    <Stack direction="row" spacing='10px' paddingRight={4}>
+                    <Stack direction="row" spacing='10px' paddingRight={5}>
                         <LanguageMenu />
                         <ThemeChanger />
                         <LocationDisplay />
@@ -133,7 +130,7 @@ const MobileHeader = () => (
              </Center>
             </Flex>
             <Divider />
-            <SearchBar m="10px 15px 10px 15px"/>
+            <SearchBar mt={2.5} mb={2.5} ml={5} mr={5} />
         </Flex>
         <Divider />
     </chakra.header>

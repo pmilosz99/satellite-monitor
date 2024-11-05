@@ -1,9 +1,9 @@
-import { Box, Center, Fade, Heading, Text } from "@chakra-ui/react"
+import { Box, Fade, Heading, Text } from "@chakra-ui/react"
 import { T } from "../../shared/components";
 
 export const HomePage = () => {
     let delayOrbitSec = 0.7;
-    // let delayHeadingSec = 0;
+    const isMobile = window.innerWidth <= 768;
 
     const orbits = [
         <Box position="absolute" bottom="-100px" left="-100px" borderWidth="1px" borderRadius="100%" h="200px" w="200px" zIndex={6}/>,
@@ -16,23 +16,9 @@ export const HomePage = () => {
 
     return (
         <Box position="relative" h="100%" overflow="hidden">
-            <Center>
-            <Heading size='4xl' p={20} bgGradient='linear(to-l, #7928CA, #ff0080f6)' bgClip='text' zIndex={7}>
+            <Heading size='4xl' p={isMobile ? 10 : 20} bgGradient='linear(to-l, #7928CA, #ff0080f6)' bgClip='text' zIndex={7} textAlign="center">
                 <T dictKey="homePageWelcome" />
             </Heading>
-            {/**====ANIMATE NOT WORKING===== */}
-            {/* {'Welcome to Satellite Monitor.'.split(' ').map((word) => {
-                    delayHeadingSec += 0.5;
-
-                    return (
-                        <Collapse in={true} animateOpacity delay={delayHeadingSec}>
-                            <Heading size="4xl" pt={20} pb={20} bgGradient='linear(to-l, #7928CA, #FF0080)' bgClip='text' zIndex={6}>
-                                {' '}{word}
-                            </Heading>
-                        </Collapse>
-                    )
-                })} */}
-            </Center>
             <Text position="relative" size="xl" pl={'10vw'} pr={'10vw'} textAlign="justify" zIndex={8}>
                 <T dictKey="homePageDisc" />
             </Text>

@@ -158,4 +158,3 @@ export const config: ThemeConfig  = {
 export const darkTheme = extendTheme({ ...darkThemeValues, config: config });
 
 export const lightTheme = extendTheme({ ...lightThemeValues, config: config });
-console.log(lightTheme)

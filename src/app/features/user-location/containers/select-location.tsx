@@ -40,6 +40,8 @@ export const SelectLocation = () => {
     const mapRef = useRef<OLMap>();
     const toast = useToast();
 
+    const isMobile = window.innerWidth <= 768;
+
     const addPoint = (coordinate: Coordinate): void => {
         if (!mapRef.current) return;
 
@@ -119,9 +121,9 @@ export const SelectLocation = () => {
 
     return (
         <Box p={5} h={'100%'} w={'100%'}>
-            <Stack spacing={5} h={'100%'} w={'100%'} direction='row'>
+            <Stack spacing={5} h={'100%'} w={'100%'} direction={isMobile ? 'column' : 'row'}>
                 <MapComponent id="map-select-location" mapRef={mapRef} />
-                <Stack h={'100%'} w={'20%'} direction="column" spacing={4}>
+                <Stack h={'100%'} w={isMobile ? '100%' : '20%'} direction={'column'} spacing={4}>
                     <Box h={'60%'} borderWidth={1} borderRadius={5}>
                         <Center>
                             <Text p={1}>
@@ -157,8 +159,9 @@ export const SelectLocation = () => {
                         <Text >
                             <T dictKey="locationInfo" />
                         </Text>
-                        </Alert>
+                    </Alert>
                 </Stack>
+                
             </Stack>
         </Box>
     )
