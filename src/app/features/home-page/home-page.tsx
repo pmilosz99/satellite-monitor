@@ -16,7 +16,7 @@ export const HomePage = () => {
 
     return (
         <Box position="relative" h="100%" overflow="hidden">
-            <Heading size='4xl' p={isMobile ? 10 : 20} bgGradient='linear(to-l, #7928CA, #ff0080f6)' bgClip='text' zIndex={7} textAlign="center">
+            <Heading position="relative"size='4xl' p={isMobile ? 10 : 20} bgGradient='linear(to-l, #7928CA, #ff0080f6)' bgClip='text' zIndex={7} textAlign="center">
                 <T dictKey="homePageWelcome" />
             </Heading>
             <Text position="relative" size="xl" pl={'10vw'} pr={'10vw'} textAlign="justify" zIndex={8}>
@@ -32,7 +32,6 @@ export const HomePage = () => {
                 )
             })}        
         </Box>
-
     )
 }
 

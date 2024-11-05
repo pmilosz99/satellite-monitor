@@ -544,7 +544,7 @@ const renderMenu = () => {
                         {
                             section.children.map((sectionItem, index, array) => (
                                 <MenuLink id={`${sectionItem.title}-${index}`} to={sectionItem.route} mb={index === array.length - 1 ? 5 : 0}>
-                                    {sectionItem.title}
+                                    <T dictKey={sectionItem.title} />
                                 </MenuLink>
                             ))
                         }
