@@ -86,7 +86,7 @@ const HamburgerMenu = () => {
               <VStack spacing={0}>
                 {
                   MENU_ITEMS.map((section, index) => (
-                    <>
+                    <Fragment key={`${section.title}-${index}`}>
                       <TitleSection key={`${section.route}-${index}`} Icon={section.icon} title={section.title} route={section.route} onClick={onClose} underline={index !== 0} />
                       <Divider mb={2} mt={2} />
                       {
@@ -101,7 +101,7 @@ const HamburgerMenu = () => {
                           ))
                         ) : (null)
                       }
-                    </>
+                    </Fragment>
                   ))
                 }
               </VStack>
