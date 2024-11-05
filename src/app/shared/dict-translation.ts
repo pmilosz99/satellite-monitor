@@ -11,6 +11,8 @@ export const dict: TLngDict = {
     [LANGUAGE_VALUES.EN]: {
         //layout
         database: 'Database',
+        starlink: 'Starlink',
+        oneWeb: 'OneWeb', 
         amateurRadio: 'Amateur radio',
         spaceStations: 'Space stations',
         activeSatellites: 'Active satellites',
@@ -80,6 +82,8 @@ export const dict: TLngDict = {
     [LANGUAGE_VALUES.PL]: {
         //layout
         database: 'Bazy danych',
+        starlink: 'Starlink',
+        oneWeb: 'OneWeb', 
         amateurRadio: 'Radioamatorskie',
         spaceStations: 'Stacje kosmiczne',
         activeSatellites: 'Aktywne satelity',
@@ -88,7 +92,7 @@ export const dict: TLngDict = {
         futureFeatures: 'Przyszłe funkcje',
         map: 'Mapa',
         map3d: 'Mapa 3D',
-        developedAndMainted: 'Aplikacja stworzona i utrzymywana przez ',
+        developedAndMainted: 'Aplikacja stworzona przez ',
         devVersion: '· Wersja deweloperska',
         searchSatellite: 'Wyszukaj satelitę',
         new: 'nowe',
