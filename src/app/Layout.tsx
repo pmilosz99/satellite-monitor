@@ -1,86 +1,155 @@
-import { ChangeEvent, FC, ReactNode, RefObject, useEffect, useMemo, useRef, useState } from "react";
-import { useAtom, useSetAtom } from "jotai";
 import { 
-    Box,
-    Button,
+    Box, 
     Center, 
-    Container, 
+    chakra, 
     Divider, 
     Flex, 
     Grid, 
     GridItem, 
     Heading, 
-    IconButton, 
-    Link as ChakraLink,
-    Menu, 
-    MenuButton, 
-    MenuItem, 
-    MenuList, 
+    Link as ChakraLink, 
     Spacer, 
-    Stack,
-    Text,
-    useColorMode,
-    chakra,
-    Tag,
-    Input,
-    InputLeftElement,
-    InputGroup,
+    Stack, 
+    StackProps, 
+    Text, 
+    useStyleConfig, 
+    Kbd, 
+    ChakraComponent, 
+    InputRightElement, 
+    Spinner, 
+    CloseButton, 
+    InputGroup, 
+    InputLeftElement, 
+    Input, 
+    LinkProps, 
     List,
-    CloseButton,
-    Kbd,
-    InputRightElement,
-    useStyleConfig,
-    Spinner,
-    Badge
+    useColorMode,
+    IconButton,
+    Menu,
+    MenuButton,
+    MenuList,
+    Button,
+    MenuItem,
+    useDisclosure,
+    Drawer,
+    DrawerOverlay,
+    DrawerCloseButton,
+    DrawerContent,
+    DrawerBody,
+    VStack
 } from "@chakra-ui/react";
-import { ChevronDownIcon, MoonIcon, SearchIcon, SunIcon } from '@chakra-ui/icons'
-import { Link as RouterLink, Outlet, To } from "react-router-dom";
-import SatelliteAltOutlinedIcon from '@mui/icons-material/SatelliteAltOutlined';
+import { T } from "./shared/components";
+import { Outlet, To, Link as RouterLink } from "react-router-dom";
+import { 
+    ChangeEvent, 
+    FC, 
+    Fragment, 
+    ReactNode, 
+    RefObject, 
+    useEffect, 
+    useMemo, 
+    useRef, 
+    useState 
+} from 'react';
+import { OverridableComponent } from "@mui/material/OverridableComponent";
+import { SvgIconTypeMap } from "@mui/material";
+import { routes } from "./shared/routes";
 import StorageIcon from '@mui/icons-material/Storage';
 import MapIcon from '@mui/icons-material/Map';
 import SettingsIcon from '@mui/icons-material/Settings';
-
-import { T } from "./shared/components";
+import { MAIN_GRADIENT, MAIN_GRADIENT_COLOR, THEME_TYPE } from "./shared/themes";
+import { useJsonTle, useMap, useTranslation } from "./shared/hooks";
+import { ChevronDownIcon, HamburgerIcon, MoonIcon, SearchIcon, SunIcon } from "@chakra-ui/icons";
+import { useAtom, useSetAtom } from "jotai";
+import { currentTheme, language } from "./shared/atoms";
+import SatelliteAltOutlinedIcon from '@mui/icons-material/SatelliteAltOutlined';
+import { LANGUAGE_VALUES } from "./shared/dict-translation";
+import { gbFlag, plFlag } from "../assets/icons";
 import { LocationDisplay } from "./features/user-location/components";
 
-import { useJsonTle, useMap, useTranslation } from "./shared/hooks";
+const HamburgerMenu = () => {
+    const { isOpen, onOpen, onClose } = useDisclosure();
+  
+    return (
+      <Box>
+          <IconButton
+              icon={<HamburgerIcon />}
+              onClick={onOpen}
+              variant='outline'
+              aria-label="Open Menu"
+          />
+        <Drawer isOpen={isOpen} placement="top" onClose={onClose}>
+          <DrawerOverlay />
+          <DrawerContent>
+            <DrawerCloseButton />
+            <DrawerBody p='45px 0 30px 0'>
+              <VStack spacing={0}>
+                {
+                  MENU_ITEMS.map((section, index) => (
+                    <Fragment key={`${section.title}-${index}`}>
+                      <TitleSection key={`${section.route}-${index}`} Icon={section.icon} title={section.title} route={section.route} onClick={onClose} underline={index !== 0} />
+                      <Divider mb={2} mt={2} />
+                      {
+                        section.children ? (
+                          section.children.map((sectionItem, index, array) => (
+                            <>
+                              <MenuLink key={`${sectionItem.route}-${index}`} to={sectionItem.route} mb={index === array.length - 1 ? 3 : 0} borderBottom="solid 1px" onClick={onClose}>
+                                {sectionItem.title}
+                              </MenuLink>
+                              {index === array.length - 1 ? <Divider mb={1} /> : null}
+                            </>
+                          ))
+                        ) : (null)
+                      }
+                    </Fragment>
+                  ))
+                }
+              </VStack>
+            </DrawerBody>
+          </DrawerContent>
+        </Drawer>
+      </Box>
+    );
+  };
 
-import { currentTheme, language } from "./shared/atoms";
-import { LANGUAGE_VALUES } from "./shared/dict-translation";
-import { routes } from "./shared/routes";
-
-import { MAIN_GRADIENT, MAIN_GRADIENT_COLOR, THEME_TYPE } from "./shared/themes";
-import { plFlag, gbFlag } from '../assets/icons';
-
-const Logo = () => (
-    <RouterLink to="/">
-        <Box pl={'38px'}>
-            <Flex>
-                <Heading size='md'>
-                    Satellite
-                </Heading>
-                <Box paddingTop={'3px'} paddingLeft={'5px'}>
-                    <SatelliteAltOutlinedIcon sx={{ fontSize: 18 }} />
+const MobileHeader = () => (
+    <chakra.header height="100%" width="100%">
+        <Flex direction="column" height="100%" width="100%">
+            <Flex h={'100%'} w='100%'>
+                <Center>
+                    <Logo pl={5} pr={5} pt={1} pb={1}/>
+                </Center>
+                <Box h={'100%'} p={'10px 0 10px 0'} >
+                    <Divider orientation='vertical' />
                 </Box>
+                <Spacer />
+                <Center>
+                    <Stack direction="row" spacing='10px' paddingRight={4}>
+                        <LanguageMenu />
+                        <ThemeChanger />
+                        <LocationDisplay />
+                        <HamburgerMenu />
+                    </Stack>
+             </Center>
             </Flex>
-            <Heading bgGradient={MAIN_GRADIENT} bgClip='text' size='md' paddingLeft={6}>
-                Monitor
-            </Heading>
-        </Box>
-    </RouterLink>
-)
-
-const AddFlag = ({ flag }: { flag: IMenuItems['icon'] }) => (
-    <Box h='20px' w='20px' paddingTop={1}>
-        {flag}
-    </Box>
-)
+            <Divider />
+            <SearchBar m="10px 15px 10px 15px"/>
+        </Flex>
+        <Divider />
+    </chakra.header>
+);
 
 interface IMenuItems {
     icon: JSX.Element;
     displayValue: string;
     value: LANGUAGE_VALUES;
 }
+
+const AddFlag = ({ flag }: { flag: IMenuItems['icon'] }) => (
+    <Box h='20px' w='20px' paddingTop={1}>
+        {flag}
+    </Box>
+)
 
 const menuItems: IMenuItems[] = [
     {
@@ -116,6 +185,24 @@ const LanguageMenu = () => {
     )
 };
 
+const Logo: ChakraComponent<"div", object> = ({ ...props }) => (
+    <RouterLink to="/">
+        <Box {...props}>
+            <Flex>
+                <Heading size='md'>
+                    Satellite
+                </Heading>
+                <Box paddingTop={'3px'} paddingLeft={'5px'}>
+                    <SatelliteAltOutlinedIcon sx={{ fontSize: 18 }} />
+                </Box>
+            </Flex>
+            <Heading bgGradient={MAIN_GRADIENT} bgClip='text' size='md' paddingLeft={6}>
+                Monitor
+            </Heading>
+        </Box>
+    </RouterLink>
+);
+
 const ThemeChanger = () => {
     const {colorMode, toggleColorMode } = useColorMode();
     const setTheme = useSetAtom(currentTheme);
@@ -140,30 +227,19 @@ const ThemeChanger = () => {
     )
 }
 
-const RightComponentsContainer = () => (
-    <Center>
-        <Stack direction="row" spacing='10px' paddingRight={4}>
-            <LanguageMenu />
-            <ThemeChanger />
-            <LocationDisplay />
-        </Stack>
-    </Center>
-);
-
-const KeyboardKeySearchBarOpen = () => (
-    <span>
-        <Kbd>ctrl</Kbd> + <Kbd>K</Kbd>
-    </span>
-);
-
-
-interface ISearchBarMenu {
+interface ISearchBarMenu{
     isOpen: boolean;
     inputGroupRef: RefObject<HTMLDivElement>;
     items: Record<string, string | number>[];
     onClose: () => void;
     onClick: () => void;
 }
+
+const KeyboardKeySearchBarOpen = () => (
+    <span>
+        <Kbd>ctrl</Kbd> + <Kbd>K</Kbd>
+    </span>
+);
 
 const SearchBarMenu: FC<ISearchBarMenu> = ({ isOpen, onClose, onClick, inputGroupRef, items }) => {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -205,7 +281,7 @@ const SearchBarMenu: FC<ISearchBarMenu> = ({ isOpen, onClose, onClick, inputGrou
     useEffect(handleAddListeners, [onClose, inputGroupRef]);
 
     return (
-        <Box ref={containerRef} __css={styles} mt={2} zIndex="999" borderRadius="6px" maxH="50vh" w="20vw" sx={{position: 'absolute', overflowY: 'auto'}}>
+        <Box ref={containerRef} __css={styles} mt={2} zIndex="999" borderRadius="6px" maxH="50vh" w={`${inputGroupRef.current?.clientWidth}px`} sx={{position: 'absolute', overflowY: 'auto'}}>
                 <List>
                     {isOpen && (
                         <Stack p={3}>
@@ -219,7 +295,7 @@ const SearchBarMenu: FC<ISearchBarMenu> = ({ isOpen, onClose, onClick, inputGrou
     )
 }
 
-const SearchBar = () => {
+export const SearchBar: ChakraComponent<"div", object> = ({ ...props }) => {
     const [inputValue, setInputValue] = useState('');
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -317,7 +393,7 @@ const SearchBar = () => {
     useEffect(addKeydownListeners, [isMenuOpen]);
 
     return (
-        <Box m="0 10px 0 10px" w="20vw">
+        <Box {...props}>
             <InputGroup ref={inputGroupRef}>
                 <InputLeftElement>
                     <SearchIcon />
@@ -330,115 +406,158 @@ const SearchBar = () => {
     )
 };
 
-const DevVersion = () => (
-    <Tag variant="subtle" ml={5} mr={5} color={MAIN_GRADIENT_COLOR}>
-        <T dictKey="devVersion" />
-    </Tag>
-);
-
 const Header = () => (
     <chakra.header height="100%" width="100%">
         <Flex h={'100%'} w='100%'>
             <Center>
-                <Logo />
+                <Logo pl={'38px'} pr={'45px'} />
             </Center>
-            <Box h={'100%'} p={'10px 0 10px 45px'} >
+            <Box h={'100%'} p={'10px 0 10px 0'} >
                 <Divider orientation='vertical' />
             </Box>
             <Center>
-                <DevVersion />
-            </Center>
-            <Center>
-                <SearchBar />
+                <SearchBar m="10px 10px 10px 20px" w="25vw"/>
             </Center>
             <Spacer />
-            <RightComponentsContainer />
+            <Center>
+                <Stack direction="row" spacing='10px' paddingRight={4}>
+                    <LanguageMenu />
+                    <ThemeChanger />
+                    <LocationDisplay />
+                </Stack>
+            </Center>
         </Flex>
         <Divider />
     </chakra.header>
-
 );
 
-const MenuLink = ({ to, children }: {to: To, children: ReactNode }) => (
-    <ChakraLink as={RouterLink} to={to} _hover={{ color: MAIN_GRADIENT_COLOR }}>{children}</ChakraLink>
-)
+interface IMenuLink extends LinkProps {
+    to: To;
+    children: ReactNode;
+}
 
-const Sidebar = () => {
-    return (
-        <chakra.nav height="100%" width="100%">
-            <Stack direction='row' h='100%' w='100%' paddingLeft={4} paddingTop={2.5}>
-                <Container centerContent p={0} pt={4}>
-                    <Stack direction="row" alignItems="center">
-                        <StorageIcon fontSize="small"/>
-                        <Text as='b' mr={5}>
-                            <T dictKey="database" />
-                        </Text>
-                    </Stack>
-                    <MenuLink to={routes.satellite.list.starlink}>
-                        Starlink
+const MenuLink: FC<IMenuLink> = ({ to, children, ...props }) => (
+    <ChakraLink as={RouterLink} to={to} _hover={{ color: MAIN_GRADIENT_COLOR }} {...props}>
+        {children}
+    </ChakraLink>
+);
+
+interface ITitleSection extends StackProps {
+    title: string;
+    Icon: OverridableComponent<SvgIconTypeMap<object, "svg">> & {
+        muiName: string;
+    }
+    route?: To,
+    onClick?: () => void;
+    underline?: boolean;
+}
+
+const TitleSection: FC<ITitleSection> = ({ Icon, title, route, onClick, underline, ...rest }) => (
+    <Stack direction="row" alignItems="center" {...rest}>
+        <Icon fontSize="small"/>
+        {
+            route ? (
+                <Text as='b' mr={5}>
+                    <MenuLink to={route} onClick={onClick} borderBottom={underline ? 'solid 1px' : ''}>
+                        {title}
                     </MenuLink>
-                    <MenuLink to={routes.satellite.list.oneWeb}>
-                        OneWeb
-                    </MenuLink>
-                    <MenuLink to={routes.satellite.list.amateurSatellites}>
-                        <T dictKey="amateurRadio" />
-                    </MenuLink>
-                    <MenuLink to={routes.satellite.list.spaceStation}>
-                        <T dictKey="spaceStations" />
-                    </MenuLink>
-                    <MenuLink to={routes.satellite.list.allSatellites}>
-                        <T dictKey="activeSatellites" />
-                    </MenuLink>
-                    <br />
-                    <Stack direction="row" alignItems="center">
-                        <MapIcon fontSize="small" />
-                        <MenuLink to={routes.map}>
-                            <Text as="b">
-                                <T dictKey="map" />
-                            </Text>
-                        </MenuLink>
-                        <Badge colorScheme='purple'>
-                            <T dictKey="new" />    
-                        </Badge> 
-                    </Stack>
-                    <Text as='b' paddingTop={4}>
-                        <T dictKey="futureFeatures" />
-                    </Text>
-                    <Text color='#b0b0b1'>
-                        <T dictKey="satellitesAbove" />
-                    </Text>
-                    <Text color='#b0b0b1'>
-                        <T dictKey="map3d" /> 
-                    </Text>
-                    <Spacer />
-                    <Stack direction="row" alignItems="center" pb={2}>
-                        <SettingsIcon />
-                        <MenuLink to={routes.settings}>
-                            <Text as="b">
-                                <T dictKey="settings" />
-                            </Text>
-                        </MenuLink>
-                    </Stack>
-                </Container>
-                <Spacer />
-                <Divider orientation='vertical' />
-            </Stack>
-        </chakra.nav>
-    )
+                </Text>
+            ) : (
+                <Text as='b' mr={5}>
+                    {title}
+                </Text>
+            )
+        }
+    </Stack>
+);
+
+interface ISectionItem {
+    title: string;
+    route: string;
+}
+
+interface ISection {
+    title: string;
+    icon: OverridableComponent<SvgIconTypeMap<object, "svg">> & {
+        muiName: string;
+    }
+    route?: To;
+    children?: ISectionItem[];
+    isAlignBottom?: boolean;
+}
+
+const MENU_ITEMS: ISection[] = [
+    {
+        title: <T dictKey="database" /> as unknown as string,
+        icon: StorageIcon,
+        children: [
+            {
+                title: 'Starlink',
+                route: routes.satellite.list.starlink,
+            },
+            {
+                title: 'OneWeb',
+                route: routes.satellite.list.oneWeb,
+            },
+            {
+                title: <T dictKey="amateurRadio" /> as unknown as string,
+                route: routes.satellite.list.amateurSatellites,
+            },
+            {
+                title: <T dictKey="spaceStations" /> as unknown as string,
+                route: routes.satellite.list.spaceStation,
+            },
+            {
+                title: <T dictKey="activeSatellites" /> as unknown as string,
+                route: routes.satellite.list.allSatellites,
+            },
+        ]
+    },
+    {
+        title: <T dictKey="map" /> as unknown as string,
+        icon: MapIcon,
+        route: routes.map,
+    },
+    {
+        title: <T dictKey="settings" /> as unknown as string,
+        icon: SettingsIcon,
+        route: routes.settings,
+        isAlignBottom: true,
+    }
+]
+
+const renderMenu = () => {
+    return MENU_ITEMS.map((section, index) => (
+        <Fragment key={`${section.title}-${index}`}>
+            { section.isAlignBottom ? <Spacer /> : null }
+            <TitleSection key={`${section.title}`} Icon={section.icon} title={section.title} route={section.route} />
+            {
+                section.children ? (
+                    <Flex pl={7} flexDir="column">
+                        {
+                            section.children.map((sectionItem, index, array) => (
+                                <MenuLink key={`${sectionItem.title}-${index}`} to={sectionItem.route} mb={index === array.length - 1 ? 5 : 0}>
+                                    {sectionItem.title}
+                                </MenuLink>
+                            ))
+                        }
+                    </Flex>
+                ) : null
+            }
+        </Fragment>
+    ))
 };
 
-const Footer = () => (
-    <chakra.footer paddingRight={5} paddingLeft={5}>
-        <Divider />
-        <Flex p={1}>
-            <Text fontSize="xs">
-                <T dictKey="developedAndMainted" />
-                <ChakraLink fontSize="xs" href="https://linkedin.com/in/piotr-milosz" isExternal color={MAIN_GRADIENT_COLOR}>Piotr Miłosz</ChakraLink>
-            </Text>
+const Sidebar = () => (
+    <chakra.nav height="100%" width="100%">
+        <Stack direction='row' h='100%' w='100%' paddingLeft={4} paddingTop={2.5}>
+            <Flex direction="column" p={0} pt={5} pb={2} h='100%' w='100%'>
+                {renderMenu()}
+            </Flex>
             <Spacer />
-            <Text fontSize="xs">© {new Date().getFullYear()} satellite-monitor.com</Text>
-        </Flex>
-    </chakra.footer>
+            <Divider orientation='vertical' />
+        </Stack>
+    </chakra.nav>
 );
 
 const Main = () => (
@@ -447,23 +566,74 @@ const Main = () => (
     </chakra.main>
 );
 
-export const Layout = () => {
+const VersionInfo = () => (
+    <Text fontSize="xs">
+        <T dictKey="devVersion" />
+    </Text>
+);
+
+const Footer = () => (
+    <chakra.footer>
+        <Divider />
+        <Flex p={1} ml={5} mr={5}>
+            <Text fontSize="xs">
+                <T dictKey="developedAndMainted" />
+                <ChakraLink fontSize="xs" href="https://linkedin.com/in/piotr-milosz" isExternal color={MAIN_GRADIENT_COLOR}>Piotr Miłosz</ChakraLink>
+            </Text>
+            <Spacer />
+            <Center>
+                <VersionInfo />
+            </Center>
+            <Text fontSize="xs" ml={2}>© {new Date().getFullYear()} satellite-monitor.com</Text>
+        </Flex>
+    </chakra.footer>
+);
+
+const FullWidthLayout = () => {
     const HEADER_HEIGHT = '60px';
     const FOOTER_HEIGHT = '30px';
     const NAV_WIDTH = '185px';
 
     return (
         <Grid
-            templateAreas={`"header header" "nav main" "nav footer"`}
-            h={'100vh'}
-            gridTemplateRows={`${HEADER_HEIGHT} auto ${FOOTER_HEIGHT}`}
-            gridTemplateColumns={`${NAV_WIDTH} auto`}
-            overflowY="auto"
-        >
-            <GridItem area={'header'}>{<Header />}</GridItem>
-            <GridItem area={'nav'}>{<Sidebar />}</GridItem>
-            <GridItem area={'main'} overflowX={'auto'}>{<Main />}</GridItem>
-            <GridItem area={'footer'}>{<Footer />}</GridItem>
-        </Grid>
-    );
+                templateAreas={`"header header" "nav main" "nav footer"`}
+                h={'100vh'}
+                gridTemplateRows={`${HEADER_HEIGHT} auto ${FOOTER_HEIGHT}`}
+                gridTemplateColumns={`${NAV_WIDTH} auto`}
+                overflowY="auto"
+            >
+                <GridItem area={'header'}>{<Header />}</GridItem>
+                <GridItem area={'nav'}>{<Sidebar />}</GridItem>
+                <GridItem area={'main'} overflowX={'auto'}>{<Main />}</GridItem>
+                <GridItem area={'footer'}>{<Footer />}</GridItem>
+            </Grid>
+    )
+}
+
+const MobileLayout = () => {
+    const HEADER_HEIGHT = '120px';
+    const FOOTER_HEIGHT = '48px';
+
+    return (
+        <Grid
+                templateAreas={`"header header" "main main" "footer footer"`}
+                h={'100vh'}
+                gridTemplateRows={`${HEADER_HEIGHT} auto ${FOOTER_HEIGHT}`}
+                overflowY="auto"
+            >
+                <GridItem area={'header'}>{<MobileHeader />}</GridItem>
+                <GridItem area={'main'} overflowX={'auto'}>{<Main />}</GridItem>
+                <GridItem area={'footer'}>{<Footer />}</GridItem>
+            </Grid>
+    )
+}
+
+export const Layout = () => {
+    const mobileBreakpoint = 768;
+
+    if (window.innerWidth <= mobileBreakpoint) {
+        return <MobileLayout />;
+    } else {
+        return <FullWidthLayout />;
+    }
 }

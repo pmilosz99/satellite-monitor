@@ -10,7 +10,7 @@ import {
 } from '@mui/material/styles';
 import { plPL } from "@mui/material/locale";
 
-import { Layout } from "./Layout"
+import { Layout } from "./Layout";
 
 import { routes } from "./shared/routes";
 import { HomePage } from "./features/home-page";

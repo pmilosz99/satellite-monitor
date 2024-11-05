@@ -54,7 +54,7 @@ export const SatelliteList: FC<ISatellitesList> = ({ group }) => {
     useEffect(handleFetchTleQueryError, [isError, toast]);
 
     return (
-        <Box pt={5} pr={5} pl={5} height={'100%'}>
+        <Box pt={5} pr={5} pl={5} pb={5} height={'100%'}>
             <CutomDataGrid 
                 rows={data as [] || []} 
                 columns={columns}
