@@ -66,6 +66,7 @@ import SatelliteAltOutlinedIcon from '@mui/icons-material/SatelliteAltOutlined';
 import { LANGUAGE_VALUES } from "./shared/dict-translation";
 import { gbFlag, plFlag } from "../assets/icons";
 import { LocationDisplay } from "./features/user-location/components";
+import { v4 as uuidv4 } from 'uuid';
 
 const HamburgerMenu = () => {
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -85,24 +86,28 @@ const HamburgerMenu = () => {
             <DrawerBody p='45px 0 30px 0'>
               <VStack spacing={0}>
                 {
-                  MENU_ITEMS.map((section, index) => (
-                    <Fragment key={`${section.title}-${index}`}>
-                      <TitleSection key={`${section.route}-${index}`} Icon={section.icon} title={section.title} route={section.route} onClick={onClose} underline={index !== 0} />
-                      <Divider mb={2} mt={2} />
-                      {
-                        section.children ? (
-                          section.children.map((sectionItem, index, array) => (
-                            <>
-                              <MenuLink key={`${sectionItem.route}-${index}`} to={sectionItem.route} mb={index === array.length - 1 ? 3 : 0} borderBottom="solid 1px" onClick={onClose}>
-                                {sectionItem.title}
-                              </MenuLink>
-                              {index === array.length - 1 ? <Divider mb={1} /> : null}
-                            </>
-                          ))
-                        ) : (null)
-                      }
-                    </Fragment>
-                  ))
+                  MENU_ITEMS.map((section, index) => {
+                    const key = uuidv4();
+
+                    return (
+                        <Fragment key={key}>
+                            <TitleSection id={`${section.title}-${key}`} Icon={section.icon} title={section.title} route={section.route} onClick={onClose} underline={index !== 0} />
+                            <Divider mb={2} mt={2} />
+                            {
+                                section.children ? (
+                                section.children.map((sectionItem, index, array) => (
+                                    <Fragment key={sectionItem.route}>
+                                        <MenuLink id={`${sectionItem.route}-${key}`} to={sectionItem.route} mb={index === array.length - 1 ? 3 : 0} borderBottom="solid 1px" onClick={onClose}>
+                                            <T dictKey={sectionItem.title} />
+                                        </MenuLink>
+                                        {index === array.length - 1 ? <Divider mb={1} /> : null}
+                                    </Fragment>
+                                ))
+                                ) : null
+                            }
+                        </Fragment> 
+                    )
+                  })
                 }
               </VStack>
             </DrawerBody>
@@ -429,17 +434,19 @@ const Header = () => (
 );
 
 interface IMenuLink extends LinkProps {
+    id: string;
     to: To;
     children: ReactNode;
 }
 
-const MenuLink: FC<IMenuLink> = ({ to, children, ...props }) => (
-    <ChakraLink as={RouterLink} to={to} _hover={{ color: MAIN_GRADIENT_COLOR }} {...props}>
+const MenuLink: FC<IMenuLink> = ({ id, to, children, ...props }) => (
+    <ChakraLink key={id} as={RouterLink} to={to} _hover={{ color: MAIN_GRADIENT_COLOR }} {...props}>
         {children}
     </ChakraLink>
 );
 
 interface ITitleSection extends StackProps {
+    id: string;
     title: string;
     Icon: OverridableComponent<SvgIconTypeMap<object, "svg">> & {
         muiName: string;
@@ -449,24 +456,27 @@ interface ITitleSection extends StackProps {
     underline?: boolean;
 }
 
-const TitleSection: FC<ITitleSection> = ({ Icon, title, route, onClick, underline, ...rest }) => (
-    <Stack direction="row" alignItems="center" {...rest}>
-        <Icon fontSize="small"/>
-        {
-            route ? (
-                <Text as='b' mr={5}>
-                    <MenuLink to={route} onClick={onClick} borderBottom={underline ? 'solid 1px' : ''}>
-                        {title}
-                    </MenuLink>
-                </Text>
-            ) : (
-                <Text as='b' mr={5}>
-                    {title}
-                </Text>
-            )
-        }
-    </Stack>
-);
+const TitleSection: FC<ITitleSection> = ({ id, Icon, title, route, onClick, underline }) => {
+    console.log(id);
+    return (
+        <Stack key={id} direction="row" alignItems="center">
+            <Icon fontSize="small"/>
+            {
+                route ? (
+                    <Text as='b' mr={5}>
+                        <MenuLink id={id} to={route} onClick={onClick} borderBottom={underline ? 'solid 1px' : ''}>
+                            <T dictKey={title} />
+                        </MenuLink>
+                    </Text>
+                ) : (
+                    <Text key={id} as='b' mr={5}>
+                        <T dictKey={title} />
+                    </Text>
+                )
+            }
+        </Stack>
+    )
+};
 
 interface ISectionItem {
     title: string;
@@ -485,38 +495,38 @@ interface ISection {
 
 const MENU_ITEMS: ISection[] = [
     {
-        title: <T dictKey="database" /> as unknown as string,
+        title: 'database',
         icon: StorageIcon,
         children: [
             {
-                title: 'Starlink',
+                title: 'starlink',
                 route: routes.satellite.list.starlink,
             },
             {
-                title: 'OneWeb',
+                title: 'oneWeb',
                 route: routes.satellite.list.oneWeb,
             },
             {
-                title: <T dictKey="amateurRadio" /> as unknown as string,
+                title: 'amateurRadio',
                 route: routes.satellite.list.amateurSatellites,
             },
             {
-                title: <T dictKey="spaceStations" /> as unknown as string,
+                title: 'spaceStations',
                 route: routes.satellite.list.spaceStation,
             },
             {
-                title: <T dictKey="activeSatellites" /> as unknown as string,
+                title: 'activeSatellites',
                 route: routes.satellite.list.allSatellites,
             },
         ]
     },
     {
-        title: <T dictKey="map" /> as unknown as string,
+        title: 'map',
         icon: MapIcon,
         route: routes.map,
     },
     {
-        title: <T dictKey="settings" /> as unknown as string,
+        title: 'settings',
         icon: SettingsIcon,
         route: routes.settings,
         isAlignBottom: true,
@@ -527,13 +537,13 @@ const renderMenu = () => {
     return MENU_ITEMS.map((section, index) => (
         <Fragment key={`${section.title}-${index}`}>
             { section.isAlignBottom ? <Spacer /> : null }
-            <TitleSection key={`${section.title}`} Icon={section.icon} title={section.title} route={section.route} />
+            <TitleSection id={`${section.title}`} Icon={section.icon} title={section.title} route={section.route} />
             {
                 section.children ? (
                     <Flex pl={7} flexDir="column">
                         {
                             section.children.map((sectionItem, index, array) => (
-                                <MenuLink key={`${sectionItem.title}-${index}`} to={sectionItem.route} mb={index === array.length - 1 ? 5 : 0}>
+                                <MenuLink id={`${sectionItem.title}-${index}`} to={sectionItem.route} mb={index === array.length - 1 ? 5 : 0}>
                                     {sectionItem.title}
                                 </MenuLink>
                             ))

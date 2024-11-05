@@ -11,6 +11,8 @@ export const dict: TLngDict = {
     [LANGUAGE_VALUES.EN]: {
         //layout
         database: 'Database',
+        starlink: 'Starlink',
+        oneWeb: 'OneWeb', 
         amateurRadio: 'Amateur radio',
         spaceStations: 'Space stations',
         activeSatellites: 'Active satellites',
@@ -80,6 +82,8 @@ export const dict: TLngDict = {
     [LANGUAGE_VALUES.PL]: {
         //layout
         database: 'Bazy danych',
+        starlink: 'Starlink',
+        oneWeb: 'OneWeb', 
         amateurRadio: 'Radioamatorskie',
         spaceStations: 'Stacje kosmiczne',
         activeSatellites: 'Aktywne satelity',
