@@ -24,6 +24,7 @@ interface IDetailsBox {
     period: number;
     numberOfOrbits: number;
     isTrackSat: boolean;
+    isMobile: boolean;
     onNumberInputChange: (_: string, valueAsNumber: number) => void;
     onTrack: () => void;
 }
@@ -33,6 +34,7 @@ export const DetailsBox: FC<IDetailsBox> = ({
     positionSat, 
     period, 
     isTrackSat, 
+    isMobile, 
     numberOfOrbits, 
     onNumberInputChange, 
     onTrack 
@@ -52,14 +54,14 @@ export const DetailsBox: FC<IDetailsBox> = ({
     };
 
     return (
-        <Box w="50%" borderWidth="1px" borderRadius="6px" p={5}>
+        <Box w={isMobile ? '100%' : '50%'} borderWidth="1px" borderRadius="6px" p={5}>
             <Center>
                 <Heading>
                     <Text>{title}</Text>
                 </Heading>
             </Center>
             <Center>
-                <Box p={5} w="80%">
+                <Box p={isMobile ? 4 : 5} w={isMobile ? '100%' : '80%'}>
                     <DetailsBoxData positionSat={positionSat} period={period} />
                     <br />
                     <NumberOrbitInput numberOfOrbits={numberOfOrbits} satPeriod={period} onChange={onNumberInputChange}/>

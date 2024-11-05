@@ -1,1 +1,0 @@
-export { renderMenu } from './render-menu';

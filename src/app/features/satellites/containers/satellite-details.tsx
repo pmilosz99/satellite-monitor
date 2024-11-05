@@ -30,6 +30,8 @@ export const SatelliteDetails = () => {
     const { satelliteId } = useParams();
     const tleQuery = useAtomValue(tle);
 
+    const isMobileLayout = window.innerWidth <= 768;
+
     const singleTle = useMemo(() => getSatelliteTle(tleQuery?.data || '', satelliteId || ''), [tleQuery, satelliteId]);   
 
     const toggleTrackIn = () => setIsTrackSat((prev) => !prev);
@@ -62,7 +64,7 @@ export const SatelliteDetails = () => {
 
     return (
         <Box p={5} h="100%">
-            <Stack direction="row" h="100%">
+            <Stack direction={isMobileLayout ? 'column' : 'row'} h="100%">
                 <SatelliteMapOrbit 
                     tle={singleTle} 
                     onSatPositionChange={onPositionChange} 
@@ -76,6 +78,7 @@ export const SatelliteDetails = () => {
                     onNumberInputChange={onNumberInputChange}
                     onTrack={onTrackIn}
                     isTrackSat={isTrackSat}
+                    isMobile={isMobileLayout}
                     period={sat.period}
                     numberOfOrbits={numberOfOrbits}
                 />
