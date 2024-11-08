@@ -65,7 +65,7 @@ import { currentTheme, language } from "./shared/atoms";
 import SatelliteAltOutlinedIcon from '@mui/icons-material/SatelliteAltOutlined';
 import { LANGUAGE_VALUES } from "./shared/dict-translation";
 import { gbFlag, plFlag } from "../assets/icons";
-import { LocationDisplay } from "./features/user-location/components";
+import { LocationPopover } from "./features/user-location/components";
 import { v4 as uuidv4 } from 'uuid';
 
 const HamburgerMenu = () => {
@@ -129,7 +129,7 @@ const MobileHeader = () => (
                     <Stack direction="row" spacing='10px' paddingRight={5}>
                         <LanguageMenu />
                         <ThemeChanger />
-                        <LocationDisplay />
+                        <LocationPopover />
                         <HamburgerMenu />
                     </Stack>
              </Center>
@@ -425,7 +425,7 @@ const Header = () => (
                 <Stack direction="row" spacing='10px' paddingRight={4}>
                     <LanguageMenu />
                     <ThemeChanger />
-                    <LocationDisplay />
+                    <LocationPopover />
                 </Stack>
             </Center>
         </Flex>
