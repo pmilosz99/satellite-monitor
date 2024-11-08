@@ -32,8 +32,8 @@ describe('LocationValue component', () => {
             />
         )
 
-        screen.debug();
-
+        // coords are rounded to 4 decimal places
+        // altitude has suffix "m"
         const longitude = screen.getByText('50.0000');
         const latitude = screen.getByText('20.0000');
         const altitude = screen.getByText('123 m');

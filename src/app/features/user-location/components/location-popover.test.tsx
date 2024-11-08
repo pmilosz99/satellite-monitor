@@ -16,7 +16,7 @@ const mockCoords: GeolocationPosition = { coords: {
     speed: null,
     toJSON: () => null
 }, timestamp: 0, toJSON: () => null };
-const mockGeolocationError: GeolocationPositionError = { code: 0, message: '', PERMISSION_DENIED: 1, POSITION_UNAVAILABLE: 2, TIMEOUT: 3 };
+const mockGeolocationError: GeolocationPositionError = { code: 0, message: 'example error message', PERMISSION_DENIED: 1, POSITION_UNAVAILABLE: 2, TIMEOUT: 3 };
 
 type TMockGeolocation = { geolocation: typeof mockGeolocation };
 
@@ -73,7 +73,6 @@ describe('LocationPopover', () => {
         const button = screen.getByTestId('location-button');
         fireEvent.click(button);
 
-        // coords are rounded off to 4 decimal places
         const contentContainer = screen.getByTestId('location-popover-content');
 
         expect(contentContainer).toBeInTheDocument();

@@ -80,7 +80,7 @@ export const LocationPopover = () => {
 
     const handleError = (error: GeolocationPositionError): void => {
         if (toast.isActive(id)) return;
-        console.error(`Błąd: ${error.message}`);
+        console.error(`Error message: ${error.message}`);
         setAtomCoordinates(null);
         toast({
             id,
