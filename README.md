@@ -9,6 +9,7 @@
   - [Frontend Optimization](#frontend-optimization)
   - [Error Handling](#error-handling)
   - [System Design](#system-design)
+  - [Testing](#testing)
 - [Available scripts](#available-scripts)
 - [Naming convention](#naming-convention)
 
@@ -149,11 +150,21 @@ With Chakra UI, the application follows a design approach based on reusable, mod
 
 By using Chakra UI's design system, Satellite Monitor achieves a cohesive, professional look while significantly reducing the time needed for UI development and ensuring that new components integrate smoothly with the existing design structure.
 
+### Testing
+The Satellite Monitor application includes unit tests to ensure reliable functionality and component behavior. Testing is implemented with Vitest as the test runner and React Testing Library for component testing.
+
+**Testing Libraries**
+- Vitest provides a fast, lightweight environment to execute tests efficiently, allowing for minimal configuration.
+- React Testing Library facilitates testing React components from a user’s perspective by focusing on component behavior and interaction rather than implementation details.
+
+Tests cover component rendering, data updates, and interactions to confirm that the application behaves as expected, promoting stability and a consistent user experience.
+
 # Available scripts
- - `npm run dev` - starting application in dev mode
- - `npm run build` - build production version
- - `npm run preview` - starting application in production mode
- - `npm run lint` - running eslint
+ - `npm run dev` - starts the application in development mode
+ - `npm run build` - builds the production version
+ - `npm run preview` - starts the application in production mode
+ - `npm run lint` - runs ESLint
+ - `npm run test` - runs all tests
 
 # Naming convention
 
