@@ -68,7 +68,7 @@ export const MapAllSats: FC<IMapAllSats> = ({ setNoradId, isDrawerOpen, setOpenD
     const noradIdRef = useRef<string>();
     const selectedFeature = useRef<Feature<Point> | null>(null);
 
-    const interval = useRef<number>();
+    const interval = useRef<NodeJS.Timeout>();
 
     const { [SETTINGS_VALUES.REFRESH_SAT_MS]: REFRESH_SAT_POSITION_MS } = useAtomValue(settingsValues);
 

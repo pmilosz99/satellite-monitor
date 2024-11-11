@@ -161,7 +161,6 @@ export const SelectLocation = () => {
                         </Text>
                     </Alert>
                 </Stack>
-                
             </Stack>
         </Box>
     )

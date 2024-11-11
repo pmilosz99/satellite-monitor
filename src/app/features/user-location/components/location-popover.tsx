@@ -1,6 +1,6 @@
 import { useEffect, useId } from "react";
 import { useAtom } from "jotai";
-import { CloseButton, Divider, IconButton, Spacer, Stack, useDisclosure } from '@chakra-ui/react'
+import { CloseButton, Divider, IconButton, Spacer, Stack, useDisclosure } from '@chakra-ui/react';
 import { useNavigate } from "react-router-dom";
 
 import { 
@@ -32,7 +32,7 @@ import { T } from "../../../shared/components";
 import { CustomToast } from "../../../shared/components/custom-toast";
 import { MAIN_GRADIENT_COLOR } from "../../../shared/themes";
 
-export const LocationDisplay = () => {
+export const LocationPopover = () => {
     const [atomCoordinates, setAtomCoordinates] = useAtom(coordinates);
 
     const coords = { latitude: atomCoordinates?.[0] || 0, longtitude: atomCoordinates?.[1] || 0 };
@@ -50,7 +50,7 @@ export const LocationDisplay = () => {
 
     const renderToastContent = (): JSX.Element => (
         <>
-            <Stack direction={'row'} p={1}>
+            <Stack direction={'row'} p={1} data-testid="location-toast-error">
                 <ErrorIcon />
                 <Text as={'b'}>
                     <T dictKey="locationSharing" />
@@ -80,7 +80,7 @@ export const LocationDisplay = () => {
 
     const handleError = (error: GeolocationPositionError): void => {
         if (toast.isActive(id)) return;
-        console.error(`Błąd: ${error.message}`);
+        console.error(`Error message: ${error.message}`);
         setAtomCoordinates(null);
         toast({
             id,
@@ -103,8 +103,8 @@ export const LocationDisplay = () => {
     useEffect(getUserPosition, [])
 
     const displayElevation = data?.results?.[0].elevation;
-    const latitude = atomCoordinates?.[0].toFixed(4);
-    const longtitude = atomCoordinates?.[1].toFixed(4);
+    const latitude = atomCoordinates?.[0]?.toFixed(4);
+    const longtitude = atomCoordinates?.[1]?.toFixed(4);
 
     return (
             <Popover
@@ -116,11 +116,12 @@ export const LocationDisplay = () => {
                         onClick={onToggle}
                         aria-label="location-button"
                         variant='outline'
-                        icon={atomCoordinates ? <LocationOnOutlinedIcon /> : <LocationOffOutlinedIcon />}
+                        icon={atomCoordinates ? <LocationOnOutlinedIcon data-testid="location-on-icon"/> : <LocationOffOutlinedIcon data-testid="location-off-icon"/>}
+                        data-testid="location-button"
                     />
                 </PopoverTrigger>
                 <Portal>
-                    <PopoverContent w="280px">
+                    <PopoverContent data-testid="location-popover-content" w="280px">
                         <PopoverArrow />
                         <PopoverCloseButton mt="5px"/>
                         <PopoverHeader>

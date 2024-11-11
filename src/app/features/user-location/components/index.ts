@@ -1,1 +1,1 @@
-export { LocationDisplay } from './location-display';
+export { LocationPopover } from './location-popover';
