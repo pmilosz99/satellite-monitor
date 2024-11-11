@@ -7,7 +7,7 @@ import { queryClient } from "../../../shared/react-query";
 import { LocationPopover } from "./location-popover";
 
 const mockGeolocation = { getCurrentPosition: vi.fn() };
-const mockCoords: GeolocationPosition = { coords: {
+const mockCoords = { coords: {
     latitude: 20.0000, longitude: 50.0000,
     accuracy: 0,
     altitude: null,
