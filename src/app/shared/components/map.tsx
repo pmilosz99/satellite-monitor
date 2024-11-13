@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo } from 'react';
+import { FC, HTMLAttributes, useEffect, useMemo } from 'react';
 import { useColorMode } from '@chakra-ui/react';
 
 import { useSetAtom } from 'jotai';
@@ -15,12 +15,12 @@ import { THEME_TYPE } from '../themes';
 
 import 'ol/ol.css';
 
-interface IMapComponent {
+interface IMapComponent extends HTMLAttributes<HTMLDivElement>{
   id: string;
   mapRef: React.MutableRefObject<Map | undefined>;
 }
 
-export const MapComponent: FC<IMapComponent> = ({ id, mapRef }) => {
+export const MapComponent: FC<IMapComponent> = ({ id, mapRef, ...rest }) => {
   const { colorMode } = useColorMode();
   const setGlobalMapState = useSetAtom(map);
 
@@ -75,7 +75,7 @@ export const MapComponent: FC<IMapComponent> = ({ id, mapRef }) => {
   useEffect(handleChangeTheme, [mapRef, isDarkTheme, osmLayer]);
 
   return (
-    <div id={id} style={{ width: '100%' , height: '100%' }} />
+    <div id={id} style={{ width: '100%' , height: '100%' }} {...rest} />
   )
 };
 
