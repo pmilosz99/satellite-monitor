@@ -116,14 +116,14 @@ export const SelectLocation = () => {
     useEffect(handleInitMap, [atomCoordinates, isInitialState]);
     useEffect(handleClickOnMap, [mapRef])
 
-    const displayLongtitude = coordinate?.[0].toFixed(4) || atomCoordinates?.[0].toFixed(4) || '';
     const displayLatitude = coordinate?.[1].toFixed(4) || atomCoordinates?.[1].toFixed(4) || '';
+    const displayLongtitude = coordinate?.[0].toFixed(4) || atomCoordinates?.[0].toFixed(4) || '';
 
     return (
         <Box p={5} h={'100%'} w={'100%'}>
             <Stack spacing={5} h={'100%'} w={'100%'} direction={isMobile ? 'column' : 'row'}>
-                <MapComponent id="map-select-location" mapRef={mapRef} />
-                <Stack h={'100%'} w={isMobile ? '100%' : '20%'} direction={'column'} spacing={4}>
+                <MapComponent id="map-select-location" mapRef={mapRef} data-testid="map-select-location-testid"/>
+                <Stack h={'100%'} w={isMobile ? '100%' : '20%'} direction={'column'} spacing={4} data-testid="set-location-stack">
                     <Box h={'60%'} borderWidth={1} borderRadius={5}>
                         <Center>
                             <Text p={1}>
@@ -137,21 +137,21 @@ export const SelectLocation = () => {
                                     <T dictKey="latitude" />
                                 </Text>
                                 <Spacer />
-                                <Text fontSize='xs'>{displayLatitude}</Text>
+                                <Text fontSize='xs' data-testid="select-location-latitude-value">{displayLatitude}</Text>
                             </Flex>
                             <Flex>
                                 <Text fontSize='xs' paddingLeft={2} pr={3}>
                                     <T dictKey="longtitude" />
                                 </Text>
                                 <Spacer />
-                                <Text fontSize='xs'>{displayLongtitude}</Text>
+                                <Text fontSize='xs' data-testid="select-location-longtitude-value">{displayLongtitude}</Text>
                             </Flex>
                         </Box>
                     </Box>
-                    <Button w={'100%'} variant='solid' onClick={handleSetLocation}>
+                    <Button w={'100%'} variant='solid' onClick={handleSetLocation} data-testid="set-location-button" isDisabled={isInitialState}>
                         <T dictKey="setLocation" />
                     </Button>
-                    <Button w={'100%'} variant='outline' onClick={handleRemoveLocation}>
+                    <Button w={'100%'} variant='outline' onClick={handleRemoveLocation} data-testid="remove-location-button">
                         <T dictKey="resetLocation" />
                     </Button>
                     <Alert status="info">

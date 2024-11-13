@@ -103,8 +103,8 @@ export const LocationPopover = () => {
     useEffect(getUserPosition, [])
 
     const displayElevation = data?.results?.[0].elevation;
-    const latitude = atomCoordinates?.[0]?.toFixed(4);
-    const longtitude = atomCoordinates?.[1]?.toFixed(4);
+    const latitude = atomCoordinates?.[1]?.toFixed(4);
+    const longtitude = atomCoordinates?.[0]?.toFixed(4);
 
     return (
             <Popover
