@@ -34,7 +34,7 @@ export const DrawerSatDetails: FC<IDrawerSatDetails> = ({ isOpen, onClose, norad
                     <Spacer />
                     <CloseButton onClick={onClose} ml={1} />
                 </Flex>
-                <Text>Norad ID: {noradId}</Text>
+                <Text data-testid="noradId-value-text">Norad ID: {noradId}</Text>
                 <Text>
                     <T dictKey="apogee" />: {sat.apogee.toFixed(2)}
                 </Text>
@@ -64,6 +64,7 @@ export const DrawerSatDetails: FC<IDrawerSatDetails> = ({ isOpen, onClose, norad
                         top: 350,
                         right: 20,
                     }}
+                    data-testid="drawer-sat-details"
                 >
                     {renderDrawerContent()}
                 </motion.div>

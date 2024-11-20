@@ -90,7 +90,7 @@ export const MapAllSats: FC<IMapAllSats> = ({ setNoradId, isDrawerOpen, setOpenD
                 feature.setId(tle.noradId);
 
                 return feature;
-            })
+            });
 
             sourceRef.current = new VectorSource({ features: featuresPoints, wrapX: false });
 
@@ -315,13 +315,13 @@ export const MapAllSats: FC<IMapAllSats> = ({ setNoradId, isDrawerOpen, setOpenD
 
     if (tle?.isLoading) return (
         <Flex alignItems='center' direction='column' h="100%" justifyContent="center">
-            <Spinner size='xl' />
+            <Spinner size='xl' data-testid="map2d-loading-spinner"/>
         </Flex>
     )
 
     return (
         <Box h="100%" borderWidth="1px">
-            <MapComponent id="map-2d-all-sat" mapRef={mapRef} />
+            <MapComponent id="map-2d-all-sat" mapRef={mapRef} data-testid="map-2d-all-sats"/>
         </Box>
     );
 }

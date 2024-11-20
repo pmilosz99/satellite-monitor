@@ -16,7 +16,7 @@ export const Map2d = () => {
     const setNoradId = (id: string): void => setSelectedNoradId(id);
 
     return (    
-        <Box h="100%" pr={MAP_PADDING} pl={MAP_PADDING} pt={MAP_PADDING} pb={MAP_PADDING}>
+        <Box h="100%" pr={MAP_PADDING} pl={MAP_PADDING} pt={MAP_PADDING} pb={MAP_PADDING} data-testid="map2d-container">
             <MapAllSats 
                 setNoradId={setNoradId} 
                 setOpenDrawer={openDrawer} 
