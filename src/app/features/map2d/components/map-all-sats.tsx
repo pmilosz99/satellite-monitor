@@ -1,4 +1,5 @@
 import { FC, useCallback, useEffect, useRef } from "react";
+import { useDeepCompareEffect } from 'react-use';
 import { Box, Flex, Spinner } from "@chakra-ui/react";
 import { useAtomValue } from "jotai";
 import Map from 'ol/Map';
@@ -15,7 +16,7 @@ import { MapComponent } from "../../../shared/components";
 import { OLMAP_ID } from "../../../shared/consts";
 import { removeLayerById } from "../../../shared/utils";
 import { getSatelliteTle } from "../../../shared/utils/getSatelliteTle";
-import { useJsonTle, useTle } from "../../../shared/hooks";
+import { useTle } from "../../../shared/hooks";
 
 import { settingsValues } from "../../../shared/atoms";
 import { SETTINGS_VALUES } from "../../../shared/types";
@@ -42,7 +43,15 @@ const style = {
 const SATELLITES_LAYER_NAME = 'all-satellites-points-layer';
 const ORBIT_SAT_LAYER = 'all-satellites-orbit-layer';
 
+export interface ISatelliteData {
+    name: string;
+    noradId: number;
+    line1: string;
+    line2: string;
+}
+
 interface IMapAllSats {
+    satellites: ISatelliteData[] | undefined;
     setNoradId: (id: string) => void;
     setOpenDrawer: () => void;
     setCloseDrawer: () => void;
@@ -54,12 +63,11 @@ type tleFromWebWorker = {
     coords: Coordinate;
 }
 
-export const MapAllSats: FC<IMapAllSats> = ({ setNoradId, isDrawerOpen, setOpenDrawer, setCloseDrawer }) => {
+export const MapAllSats: FC<IMapAllSats> = ({ satellites, setNoradId, isDrawerOpen, setOpenDrawer, setCloseDrawer }) => {
     const mapRef = useRef<Map>();
     const sourceRef = useRef<VectorSource>();
 
     const tle = useTle();
-    const tleJSON = useJsonTle();
 
     const workerGetSatPosition = useRef<Worker>();
     const workerCreateOrbitLanes = useRef<Worker>();
@@ -70,40 +78,43 @@ export const MapAllSats: FC<IMapAllSats> = ({ setNoradId, isDrawerOpen, setOpenD
 
     const interval = useRef<NodeJS.Timeout>();
 
+    const isMobile = window.innerWidth <= 768;
+
     const { [SETTINGS_VALUES.REFRESH_SAT_MS]: REFRESH_SAT_POSITION_MS } = useAtomValue(settingsValues);
 
-    const drawSatellitesLayer = useCallback((): void => {
-        if (!workerGetInitSatPosition.current || !tleJSON || !mapRef.current || noradIdRef.current ) return; // arg: noradIdRef.current => we bloking refresh layer after click on sat
-
-        const map = mapRef.current;
-
-        workerGetInitSatPosition.current.postMessage(tleJSON.data);
-
-        workerGetInitSatPosition.current.onmessage = (event) => {
-            const newTleJSON = event.data;
-
-            const featuresPoints = newTleJSON.map((tle: tleFromWebWorker) => {
-                const feature = new Feature({
-                    id: tle.noradId,
-                    geometry: new Point(tle.coords)
-                });
-                feature.setId(tle.noradId);
-
-                return feature;
-            });
-
-            sourceRef.current = new VectorSource({ features: featuresPoints, wrapX: false });
-
-            const pointsLayer = new WebGLPointsLayer({
-                [OLMAP_ID]: SATELLITES_LAYER_NAME,
-                source: sourceRef.current,
-                style: style
-              });
+    useDeepCompareEffect(() => {
+        setTimeout(() => {
+            if (!workerGetInitSatPosition.current || !satellites || !mapRef.current || noradIdRef.current ) return; // arg: noradIdRef.current => we bloking refresh layer after click on sat
+            const map = mapRef.current;
     
-              removeLayerById(map, SATELLITES_LAYER_NAME);
-              map.addLayer(pointsLayer);
-        }
-    }, [tleJSON, workerGetInitSatPosition]);
+            workerGetInitSatPosition.current.postMessage(satellites);
+    
+            workerGetInitSatPosition.current.onmessage = (event) => {
+                const newTleJSON = event.data;
+    
+                const featuresPoints = newTleJSON.map((tle: tleFromWebWorker) => {
+                    const feature = new Feature({
+                        id: tle.noradId,
+                        geometry: new Point(tle.coords)
+                    });
+                    feature.setId(tle.noradId);
+    
+                    return feature;
+                });
+    
+                sourceRef.current = new VectorSource({ features: featuresPoints, wrapX: false });
+    
+                const pointsLayer = new WebGLPointsLayer({
+                    [OLMAP_ID]: SATELLITES_LAYER_NAME,
+                    source: sourceRef.current,
+                    style: style
+                  });
+        
+                  removeLayerById(map, SATELLITES_LAYER_NAME);
+                  map.addLayer(pointsLayer);
+            }
+        })
+    }, [satellites, workerGetInitSatPosition])
 
     const drawOrbitLayer = (noradId: string): void => {
         if (!workerCreateOrbitLanes.current || !tle?.data || !mapRef.current) return;
@@ -149,13 +160,16 @@ export const MapAllSats: FC<IMapAllSats> = ({ setNoradId, isDrawerOpen, setOpenD
     if (!mapRef.current || !noradIdRef.current) return;
 
         if (isDrawerOpen) drawOrbitLayer(noradIdRef.current || '');
-        if (!isDrawerOpen) removeLayerById(mapRef.current, ORBIT_SAT_LAYER);
+        if (!isDrawerOpen) {
+            noradIdRef.current = undefined;
+            removeLayerById(mapRef.current, ORBIT_SAT_LAYER);
+        }
     }
 
     const updateSourceLayer = useCallback((): void => {
-        if (!tleJSON || !workerGetSatPosition.current) return;
+        if (!satellites || !workerGetSatPosition.current) return;
 
-        workerGetSatPosition.current.postMessage(tleJSON.data);
+        workerGetSatPosition.current.postMessage(satellites);
 
         workerGetSatPosition.current.onmessage = (event) => {
             const newTleJSON = event.data;
@@ -185,7 +199,7 @@ export const MapAllSats: FC<IMapAllSats> = ({ setNoradId, isDrawerOpen, setOpenD
             requestAnimationFrame(() => updateFeatures(0));
         };
         
-    }, [tleJSON, workerGetSatPosition]);
+    }, [satellites, workerGetSatPosition]);
 
     const hoverChangeStyle = (event: MapBrowserEvent<UIEvent>) => {
         if (!mapRef.current) return;
@@ -281,21 +295,18 @@ export const MapAllSats: FC<IMapAllSats> = ({ setNoradId, isDrawerOpen, setOpenD
     }, [sourceRef.current]);
 
     useEffect(() => {
-        setTimeout(drawSatellitesLayer);
-    }, [drawSatellitesLayer]);
-
-    useEffect(() => {
         setTimeout(addListenerToMap);
 
         return removeListenersFromMap;
 
-    }, [addListenerToMap, removeListenersFromMap, tleJSON]);
+    }, [addListenerToMap, removeListenersFromMap, satellites]);
 
     useEffect(() => {
         initIntervalUpdateSourceLayer();
 
         return () => removeIntervalUpdateSourceLayer();
     }, [initIntervalUpdateSourceLayer]);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(handleDrawerOpen, [isDrawerOpen, noradIdRef.current, drawOrbitLayer]);
 
@@ -309,7 +320,7 @@ export const MapAllSats: FC<IMapAllSats> = ({ setNoradId, isDrawerOpen, setOpenD
         return () => {
             document.removeEventListener('visibilitychange', onVisibilityChange);
         }
-    }, [drawSatellitesLayer, initIntervalUpdateSourceLayer])
+    }, [initIntervalUpdateSourceLayer])
 
 //============================================= useEffects above ========================================================
 
@@ -320,7 +331,7 @@ export const MapAllSats: FC<IMapAllSats> = ({ setNoradId, isDrawerOpen, setOpenD
     )
 
     return (
-        <Box h="100%" borderWidth="1px">
+        <Box h={isMobile ? '80%' : '94%'} borderWidth="1px">
             <MapComponent id="map-2d-all-sat" mapRef={mapRef} data-testid="map-2d-all-sats"/>
         </Box>
     );

@@ -457,7 +457,6 @@ interface ITitleSection extends StackProps {
 }
 
 const TitleSection: FC<ITitleSection> = ({ id, Icon, title, route, onClick, underline }) => {
-    console.log(id);
     return (
         <Stack key={id} direction="row" alignItems="center">
             <Icon fontSize="small"/>
@@ -543,7 +542,7 @@ const renderMenu = () => {
                     <Flex pl={7} flexDir="column">
                         {
                             section.children.map((sectionItem, index, array) => (
-                                <MenuLink id={`${sectionItem.title}-${index}`} to={sectionItem.route} mb={index === array.length - 1 ? 5 : 0}>
+                                <MenuLink key={`${sectionItem.title}-${index}`} id={`id${sectionItem.title}-${index}`} to={sectionItem.route} mb={index === array.length - 1 ? 5 : 0}>
                                     <T dictKey={sectionItem.title} />
                                 </MenuLink>
                             ))
