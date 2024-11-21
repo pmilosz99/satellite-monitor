@@ -72,6 +72,8 @@ export const dict: TLngDict = {
         perigee: 'Perigee',
         period: 'Orbital period',
         moreDetails: 'More details',
+        numberOfSatellites: 'Number of satellites',
+        all: 'All',
         //settings
         settings: 'Settings',
         settingsApp: 'Application settings',
@@ -142,6 +144,8 @@ export const dict: TLngDict = {
         perigee: 'Perigeum',
         period: 'Okres orbitalny',
         moreDetails: 'Więcej szczegółów',
+        numberOfSatellites: 'Ilość satelitów',
+        all: 'Wszystkie',
         //settings
         settings: 'Ustawienia',
         settingsApp: 'Ustawienia aplikacji',

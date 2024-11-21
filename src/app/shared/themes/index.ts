@@ -69,6 +69,18 @@ const darkThemeValues ={
         borderRadius: 'md',
       }
     },
+    FilterRadioGroup: {
+      baseStyle: {
+        pl: 2,
+        pr: 1,
+        pt: 1,
+        pb: 1,
+        mb: 4,
+        border: '1px',
+        borderRadius: 'md',
+        borderColor: 'whiteAlpha.300',
+      }
+    }
   }
 }
 
@@ -145,6 +157,18 @@ const lightThemeValues = {
       baseStyle: {
         bg: 'gray.100',
         borderRadius: 'md',
+      }
+    },
+    FilterRadioGroup: {
+      baseStyle: {
+        pl: 2,
+        pr: 1,
+        pt: 1,
+        pb: 1,
+        mb: 4,
+        border: '1px',
+        borderRadius: 'md',
+        borderColor: 'gray.200',
       }
     }
   }
