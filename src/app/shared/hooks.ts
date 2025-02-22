@@ -1,7 +1,8 @@
 import { useAtomValue } from "jotai"
-import { language, map, tle } from "./atoms";
+import { coordinates, language, map, tle, userHeight } from "./atoms";
 import { dict } from "./dict-translation";
 import { getJsonTle } from "./utils/getJsonTle";
+import { IUserLocation } from "../features/user-location/types/user-location";
 
 export const useMap = () => {
     const mapInstance = useAtomValue(map);
@@ -41,4 +42,16 @@ export const useJsonTle = () => {
         data: result,
         isLoading: tleData.isLoading
     }
+}
+
+export const useUserLocation = (): IUserLocation | undefined => {
+    const coords = useAtomValue(coordinates);
+    const height = useAtomValue(userHeight);
+
+    if (!coords) return;
+
+    return {
+        coordinates: coords,
+        height: height || 0,
+    };
 }

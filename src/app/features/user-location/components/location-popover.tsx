@@ -1,5 +1,5 @@
 import { useEffect, useId } from "react";
-import { useAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { CloseButton, Divider, IconButton, Spacer, Stack, useDisclosure } from '@chakra-ui/react';
 import { useNavigate } from "react-router-dom";
 
@@ -27,13 +27,14 @@ import { useElevation } from "../data-access/altitude";
 import { LocationValue } from "./location-value";
 
 import { routes } from "../../../shared/routes";
-import { coordinates } from "../../../shared/atoms";
+import { coordinates, userHeight } from "../../../shared/atoms";
 import { T } from "../../../shared/components";
 import { CustomToast } from "../../../shared/components/custom-toast";
 import { MAIN_GRADIENT_COLOR } from "../../../shared/themes";
 
 export const LocationPopover = () => {
     const [atomCoordinates, setAtomCoordinates] = useAtom(coordinates);
+    const setUserHeight = useSetAtom(userHeight);
 
     const coords = { latitude: atomCoordinates?.[0] || 0, longtitude: atomCoordinates?.[1] || 0 };
 
@@ -42,6 +43,10 @@ export const LocationPopover = () => {
     const navigate = useNavigate();
     const { isOpen, onToggle, onClose } = useDisclosure();
     const { data } = useElevation([coords], !!atomCoordinates);
+
+    const displayElevation = data?.results?.[0].elevation;
+    const latitude = atomCoordinates?.[1]?.toFixed(4);
+    const longtitude = atomCoordinates?.[0]?.toFixed(4);
 
     const handleSuccess = (position: GeolocationPosition): void => {
         const { longitude, latitude } = position.coords;
@@ -100,11 +105,12 @@ export const LocationPopover = () => {
     };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    useEffect(getUserPosition, [])
+    useEffect(getUserPosition, []);
+    useEffect(() => {
+        if (!displayElevation) return;
 
-    const displayElevation = data?.results?.[0].elevation;
-    const latitude = atomCoordinates?.[1]?.toFixed(4);
-    const longtitude = atomCoordinates?.[0]?.toFixed(4);
+        setUserHeight(Number(displayElevation));
+    }, [displayElevation, setUserHeight])
 
     return (
             <Popover
