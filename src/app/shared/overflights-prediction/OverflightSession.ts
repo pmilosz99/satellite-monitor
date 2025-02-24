@@ -19,15 +19,15 @@ export class OverflightSession {
             }
         }
 
-        if (!isSatVisibleInAllSky) {
-            if (this.visibleStartTime) {
-                this.visibleEndTime = new Date(currentTime);
+        if (!isSatVisibleAbove10 && isSatVisibleInAllSky) {
+            if (this.above10StartTime) {
+                this.above10EndTime = new Date(currentTime);
             }
         }
 
-        if (!isSatVisibleAbove10) {
-            if (this.above10StartTime) {
-                this.above10EndTime = new Date(currentTime);
+        if (!isSatVisibleInAllSky) {
+            if (this.visibleStartTime) {
+                this.visibleEndTime = new Date(currentTime);
             }
         }
     }
@@ -37,9 +37,14 @@ export class OverflightSession {
     }
 
     complete(): IOverflight {
+        if (!this.isFinish()) {
+            throw new Error('Overflight is not ending');
+        }
+
         const middleTime = new Date(
             (this.visibleStartTime!.getTime() + this.visibleEndTime!.getTime()) / 2
         );
+
         return {
             visibleStartTime: this.visibleStartTime!,
             visible10ElevTime: this.above10StartTime,
