@@ -18,13 +18,10 @@ import { useAtomValue } from "jotai";
 import { DetailsBox } from "../components/details-box";
 
 import { getSatelliteTle } from "../../../shared/utils/getSatelliteTle";
-import { ISatellitePosition } from "../types";
+
 import { T } from "../../../shared/components";
 
-const emptyPosition = { longtitude: 0, latitude: 0, height: 0 } as ISatellitePosition;
-
 export const SatelliteDetails = () => {
-    const [positionSatellite, setPositionSatellite] = useState<ISatellitePosition>();
     const [numberOfOrbits, setNumberOfOrbits] = useState<number>(1);
     const [isTrackSat, setIsTrackSat] = useState(false);
     const { satelliteId } = useParams();
@@ -35,10 +32,6 @@ export const SatelliteDetails = () => {
     const singleTle = useMemo(() => getSatelliteTle(tleQuery?.data || '', satelliteId || ''), [tleQuery, satelliteId]);   
 
     const toggleTrackIn = () => setIsTrackSat((prev) => !prev);
-
-    const onPositionChange = (data: ISatellitePosition) => {
-        setPositionSatellite(data);
-    };
 
     const onNumberInputChange = useMemo(() => debounce((event) => {
         setNumberOfOrbits(event);
@@ -67,19 +60,18 @@ export const SatelliteDetails = () => {
             <Stack direction={isMobileLayout ? 'column' : 'row'} h="100%">
                 <SatelliteMapOrbit 
                     tle={singleTle} 
-                    onSatPositionChange={onPositionChange} 
                     numberOfOrbits={numberOfOrbits} 
                     isTrackSat={isTrackSat}
                     setTrackSatOff={() => setIsTrackSat(false)}
                 />
                 <DetailsBox 
                     title={singleTle[0]}
-                    positionSat={positionSatellite || emptyPosition}
-                    onNumberInputChange={onNumberInputChange}
+                    tle={singleTle}
                     onTrack={onTrackIn}
                     isTrackSat={isTrackSat}
                     isMobile={isMobileLayout}
                     period={sat.period}
+                    onNumberInputChange={onNumberInputChange}
                     numberOfOrbits={numberOfOrbits}
                 />
             </Stack>
