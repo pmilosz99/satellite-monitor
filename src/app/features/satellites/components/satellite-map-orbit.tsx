@@ -18,26 +18,15 @@ import {
     Style 
 } from "ol/style";
 
-import { 
-    twoline2satrec, 
-    eciToGeodetic, 
-    propagate, 
-    gstime, 
-    degreesLong, 
-    degreesLat, 
-    EciVec3
-} from 'satellite.js';
-
 import { MapComponent } from "../../../shared/components";
 import { OLMAP_ID, OL_DEFAULT_MAP_PROJECTION } from "../../../shared/consts";
 import { Satellite, TleLine1, TleLine2 } from "ootk-core";
-import { removeLayerById } from "../../../shared/utils";
-import { ISatellitePosition } from "../types";
+import { getSatellitePosition, removeLayerById } from "../../../shared/utils";
 import { isDrawOrbitLayerLoading } from "../../../shared/atoms";
+import { ISatPosition } from "../../../shared/utils/getSatellitePosition";
 
 interface ISatelliteMapOrbit {
     tle: string[];
-    onSatPositionChange: (data: ISatellitePosition) => void;
     numberOfOrbits?: number;
     isTrackSat?: boolean;
     setTrackSatOff?: () => void;
@@ -59,13 +48,12 @@ const ORBIT_LAYER_NAME = 'orbit-line-layer';
 
 export const SatelliteMapOrbit: FC<ISatelliteMapOrbit> = ({ 
     tle, 
-    onSatPositionChange, 
     setTrackSatOff, 
     numberOfOrbits = 1, 
     isTrackSat = false, 
 }) => {
     const mapRef = useRef<Map>();
-    const positionRef = useRef<ISatellitePosition>();
+    const positionRef = useRef<ISatPosition>();
     const workerCreateOrbitLanes = useRef<Worker>();
 
     const firstLineTle = tle[1];
@@ -73,22 +61,6 @@ export const SatelliteMapOrbit: FC<ISatelliteMapOrbit> = ({
     const sat = new Satellite({ tle1: firstLineTle as TleLine1, tle2: secondLineTle as TleLine2 });
 
     const setIsLoading = useSetAtom(isDrawOrbitLayerLoading);
-
-    const getSatellitePosition = (time: Date): ISatellitePosition => {
-        const satrec = twoline2satrec(firstLineTle, secondLineTle);
-
-        const positionAndVelocity = propagate(satrec, time);
-        const positionEci = positionAndVelocity.position as EciVec3<number>;
-        
-        const gmst = gstime(time);
-        const positionGd = eciToGeodetic(positionEci, gmst);
-
-        const longtitude = degreesLong(positionGd.longitude);
-        const latitude = degreesLat(positionGd.latitude);
-        const height = positionGd.height;
-
-        return { longtitude, latitude, height };
-    };
 
     const drawOrbitLayer = (): void => {
         if (!mapRef.current || !tle || !workerCreateOrbitLanes.current) return;
@@ -170,7 +142,7 @@ export const SatelliteMapOrbit: FC<ISatelliteMapOrbit> = ({
     const zoomIn = () => {
         if (!mapRef.current || !positionRef.current) return;
 
-        const transformCoords = transform([positionRef.current.longtitude, positionRef.current.latitude], 'EPSG:4326', OL_DEFAULT_MAP_PROJECTION);
+        const transformCoords = transform([positionRef.current.longitude, positionRef.current.latitude], 'EPSG:4326', OL_DEFAULT_MAP_PROJECTION);
 
         isTrackSat ? mapRef.current.getView().animate({center: transformCoords, zoom: 9}) : null;
     };
@@ -178,8 +150,8 @@ export const SatelliteMapOrbit: FC<ISatelliteMapOrbit> = ({
     const updateSatellitePosition = (event: RenderEvent): void => {
         if (!mapRef.current || !tle) return;
 
-        const position = getSatellitePosition(new Date());
-        const transformCoords = transform([position.longtitude, position.latitude], 'EPSG:4326', OL_DEFAULT_MAP_PROJECTION);
+        const position = getSatellitePosition(new Date(), firstLineTle, secondLineTle);
+        const transformCoords = transform([position.longitude, position.latitude], 'EPSG:4326', OL_DEFAULT_MAP_PROJECTION);
 
         positionRef.current = position;
 
@@ -199,14 +171,6 @@ export const SatelliteMapOrbit: FC<ISatelliteMapOrbit> = ({
         mapRef.current.render(); //We force the map rendering to be looped through the render function and postrender listener
     };
 
-    const updatePositionState = (): (() => void) => {
-        const interval = setInterval(() => {
-            onSatPositionChange(positionRef.current as ISatellitePosition);
-        }, 1000);
-
-        return () => clearInterval(interval);
-    };
-
     const handleWebWorker = () => {
         workerCreateOrbitLanes.current = new Worker(new URL('../../../shared/worker/create-orbit-lanes.ts', import.meta.url), { type: "module" });
 
@@ -218,8 +182,6 @@ export const SatelliteMapOrbit: FC<ISatelliteMapOrbit> = ({
     useEffect(drawOrbitLayer, [tle, numberOfOrbits]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(drawSatelliteLayer, [tle, isTrackSat]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    useEffect(updatePositionState, [tle]);
     useEffect(zoomIn, [isTrackSat]);
     useEffect(disabledTracker, [setTrackSatOff]);
 

@@ -37,8 +37,8 @@ self.onmessage = (event: MessageEvent<IWorkerCreateOrbitOnMessage>) => {
     const PERIOD_VALUE = calculatePeriod(period);
 
     for(let i=0; i < numberOfOrbits * PERIOD_VALUE; i++) {
-        const { longtitude, latitude } = getSatellitePosition(currentTime, firstLine, secondLine);//create points (sat position)
-        const transformCoords = transform([longtitude, latitude], 'EPSG:4326', OL_DEFAULT_MAP_PROJECTION);
+        const { longitude, latitude } = getSatellitePosition(currentTime, firstLine, secondLine);//create points (sat position)
+        const transformCoords = transform([longitude, latitude], 'EPSG:4326', OL_DEFAULT_MAP_PROJECTION);
 
         currentTime = calculateTime(period, i) //adding 1 sec or 1 minutes to the time needed to calculate the sat position
 

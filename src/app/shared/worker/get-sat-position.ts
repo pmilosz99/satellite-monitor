@@ -14,7 +14,7 @@ self.onmessage = (event) => {
 
         if (!position) continue;
 
-        const transformCoords = transform([position.longtitude, position.latitude], 'EPSG:4326', OL_DEFAULT_MAP_PROJECTION);
+        const transformCoords = transform([position.longitude, position.latitude], 'EPSG:4326', OL_DEFAULT_MAP_PROJECTION);
 
         result.push({noradId: tleJSON[i].noradId, coords: transformCoords});
     }
