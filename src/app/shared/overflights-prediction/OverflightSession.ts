@@ -19,14 +19,14 @@ export class OverflightSession {
             }
         }
 
-        if (!isSatVisibleAbove10 && isSatVisibleInAllSky) {
-            if (this.above10StartTime) {
+        if (!isSatVisibleAbove10) {
+            if (!this.above10EndTime && this.above10StartTime) {
                 this.above10EndTime = new Date(currentTime);
             }
         }
 
         if (!isSatVisibleInAllSky) {
-            if (this.visibleStartTime) {
+            if (!this.visibleEndTime && this.visibleStartTime) {
                 this.visibleEndTime = new Date(currentTime);
             }
         }
