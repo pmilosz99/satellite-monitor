@@ -18,6 +18,7 @@ import {
 
 import { useUserLocation } from "../../../../shared/hooks";
 import { getOverflightsPrediction, IOverflight } from "../../../../shared/overflights-prediction";
+import { T } from "../../../../shared/components";
 
 const getHoursMinutesSeconds = (date: Date) => {
     const HH = String(date.getHours()).padStart(2, '0');
@@ -34,7 +35,7 @@ interface IUpcomingOverflights {
 type TOverflightKeys = keyof IOverflight;
 
 const overflightKeys: TOverflightKeys[] = ['visibleStartTime', 'visible10ElevTime', 'visibleMaxHeightTime', 'visibl10ElevEndTime', 'visibleEndTime'];
-const tableHeaderKeys = ['L.p', 'Wschodzi', 'Wznosi się na ponad 10°', 'Maksymalna wysokość', 'Schodzi poniżej 10°', 'Zachodzi'];
+const tableHeaderTranslationKeys = ['no', 'rises', 'reachesAbove10', 'maximumAltitude', 'dropsBelow10', 'sets'];
 const ONE_DAY_SEC = 86000; 
 
 export const UpcomingOverflights: FC<IUpcomingOverflights> = ({ tle }) => {
@@ -57,15 +58,15 @@ export const UpcomingOverflights: FC<IUpcomingOverflights> = ({ tle }) => {
     const renderContent = () => {
         if (!userLocation) return (
             <Alert status='warning'>
-              <AlertIcon />
-              Aby zobaczyć najbliższe przeloty ustaw swoją lokalizację
-            </Alert>
+                <AlertIcon />
+                    <T dictKey="alertLocationMessOverflights" />
+                </Alert>
         )
 
         if (!overflights?.length) return (
             <Alert status='info'>
                 <AlertIcon />
-                Brak przelotów w ciągu 24h
+                <T dictKey="alertMessNoPasses" />
             </Alert>
         )
 
@@ -76,7 +77,7 @@ export const UpcomingOverflights: FC<IUpcomingOverflights> = ({ tle }) => {
         <TableContainer>
             <Table size='sm'>
                 <Thead>
-                    {renderHeader(tableHeaderKeys)}
+                    {renderHeader(tableHeaderTranslationKeys)}
                 </Thead>
                 <Tbody>
                     {renderRows()}
@@ -89,7 +90,9 @@ export const UpcomingOverflights: FC<IUpcomingOverflights> = ({ tle }) => {
         <Tr>
             {
                 keys.map((key) => (
-                    <Th key={uuidv4()}>{key}</Th>
+                    <Th key={uuidv4()}>
+                        {<T dictKey={key} />}
+                    </Th>
                 ))
             }
         </Tr>
@@ -121,7 +124,10 @@ export const UpcomingOverflights: FC<IUpcomingOverflights> = ({ tle }) => {
     return (
         <Box h="100%">
             <Center>
-                <Heading as='h4' size='md' m={4}>Najbliższe przeloty (24h)</Heading>
+                <Heading as='h4' size='md' m={4}>
+                    <T dictKey="upcomingPasses" />
+                    
+                </Heading>
             </Center>
             {renderContent()}
         </Box>

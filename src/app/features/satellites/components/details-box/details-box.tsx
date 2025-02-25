@@ -13,6 +13,7 @@ import {
 
 import { UpcomingOverflights } from "./upcoming-overflights";
 import DetailsBoxPosition from "./details-box-position";
+import { T } from "../../../../shared/components";
 
 interface IDetailsBox {
     title: string;
@@ -39,8 +40,12 @@ export const DetailsBox: FC<IDetailsBox> = ({
     const renderMobileLayout = () => (
         <Tabs isFitted>
             <TabList>
-                <Tab>Pozycja satelity</Tab>
-                <Tab>Przeloty satelity</Tab>
+                <Tab>
+                    <T dictKey="satPosition" />
+                </Tab>
+                <Tab>
+                    <T dictKey="satPasses" />
+                </Tab>
             </TabList>
             <TabPanels>
                 <TabPanel>
