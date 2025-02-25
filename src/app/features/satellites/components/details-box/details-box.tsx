@@ -18,6 +18,7 @@ import { useMap } from "../../../../shared/hooks";
 import { OL_DEFAULT_MAP_PROJECTION } from "../../../../shared/consts";
 import { getSatellitePosition } from "../../../../shared/utils";
 import { ISatPosition } from "../../../../shared/utils/getSatellitePosition";
+import { UpcomingOverflights } from "./upcoming-overflights";
 
 const initialPosition: ISatPosition = { longitude: 0, latitude: 0, height: 0 };
 
@@ -86,7 +87,8 @@ export const DetailsBox: FC<IDetailsBox> = ({
                     <NumberOrbitInput numberOfOrbits={numberOfOrbits} satPeriod={period} onChange={onNumberInputChange}/>
                     <br />
                     <DetailsBoxButtons isTrackSat={isTrackSat} onZoom={onZoomIn} onTrack={onTrack}/>
-                    <br />
+                    <br /><br />
+                    <UpcomingOverflights tle={tle} />
                 </Box>
             </Center>
         </Box>
