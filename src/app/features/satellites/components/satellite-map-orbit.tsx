@@ -186,7 +186,7 @@ export const SatelliteMapOrbit: FC<ISatelliteMapOrbit> = ({
     useEffect(disabledTracker, [setTrackSatOff]);
 
     return (
-        <Box h="100%" w="100%" borderWidth="1px">
+        <Box h="100%" minH="30vh" w="100%" borderWidth="1px">
             <MapComponent id="map-satellite-details-orbit" mapRef={mapRef} />
         </Box>
     );

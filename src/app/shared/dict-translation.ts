@@ -129,7 +129,7 @@ export const dict: TLngDict = {
         height: 'Wysokość',
         name: 'Nazwa',
         numberOrbit: 'Ilość orbit',
-        orbitTime: 'Czas w jakim obiekt okrąża ziemie',
+        orbitTime: 'Czas okrążenia',
         warningNumberOrbit: 'Narysowanie dużej ilości orbit może chwilę potrwać',
         zoom: 'Przybliż',
         trackPosition: 'Śledź pozycję',

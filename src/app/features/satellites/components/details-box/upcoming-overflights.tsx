@@ -121,9 +121,8 @@ export const UpcomingOverflights: FC<IUpcomingOverflights> = ({ tle }) => {
     return (
         <Box h="100%">
             <Center>
-                <Heading as='h3' size='lg'>Najbliższe przeloty (24h)</Heading>
+                <Heading as='h4' size='md' m={4}>Najbliższe przeloty (24h)</Heading>
             </Center>
-            <br />
             {renderContent()}
         </Box>
     )

@@ -1,26 +1,18 @@
-import { FC, useEffect, useState } from "react";
-import { easeOut } from "ol/easing";
-import { transform } from "ol/proj";
-import { Coordinate } from "ol/coordinate";
+import { FC } from "react";
 import { 
     Box, 
     Center, 
     Heading, 
+    Tab, 
+    TabList, 
+    TabPanel, 
+    TabPanels, 
+    Tabs, 
     Text 
 } from "@chakra-ui/react";
 
-import { DetailsBoxData } from "./details-box-data";
-import { DetailsBoxButtons } from "./details-box-buttons";
-import { NumberOrbitInput } from "./number-orbit-input";
-
-import { useMap } from "../../../../shared/hooks";
-
-import { OL_DEFAULT_MAP_PROJECTION } from "../../../../shared/consts";
-import { getSatellitePosition } from "../../../../shared/utils";
-import { ISatPosition } from "../../../../shared/utils/getSatellitePosition";
 import { UpcomingOverflights } from "./upcoming-overflights";
-
-const initialPosition: ISatPosition = { longitude: 0, latitude: 0, height: 0 };
+import DetailsBoxPosition from "./details-box-position";
 
 interface IDetailsBox {
     title: string;
@@ -43,52 +35,62 @@ export const DetailsBox: FC<IDetailsBox> = ({
     onNumberInputChange, 
     onTrack 
 }) => {
-    const [positionSat, setPositionSat] = useState<ISatPosition>(initialPosition);
 
-    const map = useMap();
+    const renderMobileLayout = () => (
+        <Tabs isFitted>
+            <TabList>
+                <Tab>Pozycja satelity</Tab>
+                <Tab>Przeloty satelity</Tab>
+            </TabList>
+            <TabPanels>
+                <TabPanel>
+                    <DetailsBoxPosition 
+                        tle={tle} 
+                        period={period}
+                        numberOfOrbits={numberOfOrbits}
+                        isTrackSat={isTrackSat}
+                        onNumberInputChange={onNumberInputChange}
+                        onTrack={onTrack}
+                    />
+                </TabPanel>
+                <TabPanel p={0}>
+                    <UpcomingOverflights tle={tle} />
+                </TabPanel>
+            </TabPanels>
+        </Tabs>
+    )
 
-    const handlePositionSatellite = (currentTime: Date) => {
-        const position = getSatellitePosition(currentTime, tle[1], tle[2]);
+    const renderFullWidthLayout = () => (
+        <>
+            <DetailsBoxPosition 
+                tle={tle} 
+                period={period}
+                numberOfOrbits={numberOfOrbits}
+                isTrackSat={isTrackSat}
+                onNumberInputChange={onNumberInputChange}
+                onTrack={onTrack}
+            />
+            <br /><br />
+            <UpcomingOverflights tle={tle} />
+        </>
+    )
 
-        setPositionSat(position);
-    };
+    const renderContent = () => {
+        if (isMobile) return renderMobileLayout();
 
-    const onZoomIn = (): void => {
-        if (!map || !positionSat) return;
-
-        const transformCoords = transform([positionSat.longitude, positionSat.latitude], 'EPSG:4326', OL_DEFAULT_MAP_PROJECTION);
-
-        map.getView().animate({
-            center: transformCoords as Coordinate,
-            zoom: 10,
-            easing: easeOut,
-        });
-    };
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            handlePositionSatellite(new Date());
-        }, 1000);
-
-        return () => clearInterval(interval);
-    })
+        return renderFullWidthLayout();
+    }
 
     return (
-        <Box w={isMobile ? '100%' : '50%'} borderWidth="1px" borderRadius="6px" p={5}>
+        <Box w={isMobile ? '100%' : '50%'} borderWidth="1px" borderRadius="6px">
             <Center>
                 <Heading>
-                    <Text>{title}</Text>
+                    <Text p={isMobile ? 2 : 5}>{title}</Text>
                 </Heading>
             </Center>
             <Center>
-                <Box p={isMobile ? 1 : 0} w={isMobile ? '100%' : '80%'}>
-                    <DetailsBoxData positionSat={positionSat} period={period} />
-                    <br />
-                    <NumberOrbitInput numberOfOrbits={numberOfOrbits} satPeriod={period} onChange={onNumberInputChange}/>
-                    <br />
-                    <DetailsBoxButtons isTrackSat={isTrackSat} onZoom={onZoomIn} onTrack={onTrack}/>
-                    <br /><br />
-                    <UpcomingOverflights tle={tle} />
+                <Box p={isMobile ? 0 : 0} w={isMobile ? '100%' : '80%'}> 
+                    {renderContent()}
                 </Box>
             </Center>
         </Box>
