@@ -26,6 +26,12 @@ export class OverflightPredictor {
         for (let i = 0; i < this.durationSeconds; i++) {
             const isVisible = this.sensorAllSky.isSatInFov(this.satellite, currentTime);
             const isAbove10 = this.sensorAbove10.isSatInFov(this.satellite, currentTime);
+            const isPassStarted = i === 0 && isVisible;
+
+            if (isPassStarted) {
+                currentTime = new Date(currentTime.getTime() + 1800000); // add 30 min
+                continue;
+            } // The pass is started, we move time to next pass
 
             currentOverflightSession.update(currentTime, isVisible, isAbove10);
 
