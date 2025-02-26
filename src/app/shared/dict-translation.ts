@@ -26,6 +26,7 @@ export const dict: TLngDict = {
         searchSatellite: 'Search for a satellite',
         fetchErrorData: 'Data fetch error',
         new: 'new',
+        passes: 'Passes',
         //home-page
         homePageWelcome: 'Welcome to Satellite Monitor',
         homePageDisc: ` Satellite Monitor is a hobby project that enables the planning of night-time satellite observations. 
@@ -109,6 +110,7 @@ export const dict: TLngDict = {
         devVersion: '· Wersja deweloperska',
         searchSatellite: 'Wyszukaj satelitę',
         new: 'nowe',
+        passes: 'Przeloty',
         //home-page
         homePageWelcome: 'Witaj na Satellite Monitor',
         homePageDisc: `Satellite Monitor jest to hobbistyczny projekt, który umożliwa planowanie nocnych obserwacji satelitów.

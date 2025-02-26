@@ -18,4 +18,5 @@ export const routes = {
     satellitesAbove: 'satellites-above',
     map: 'map',
     settings: 'settings',
+    upcomingPasses: 'upcoming-passes',
 };
