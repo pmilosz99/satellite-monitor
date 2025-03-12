@@ -14,10 +14,10 @@ import SearchIcon from '@mui/icons-material/Search';
 import { routes } from "../../../shared/routes";
 import { coordinatesToDM } from "../utils";
 
-const getHoursMinutesSeconds = (date: Date) => {
-    const HH = String(date.getHours()).padStart(2, '0');
-    const MM = String(date.getMinutes()).padStart(2, '0');
-    const SS = String(date.getSeconds()).padStart(2, '0');
+const getHoursMinutesSeconds = (date: Date | null) => {
+    const HH = String(date?.getHours()).padStart(2, '0');
+    const MM = String(date?.getMinutes()).padStart(2, '0');
+    const SS = String(date?.getSeconds()).padStart(2, '0');
 
     return `${HH}:${MM}:${SS}`;
 }
