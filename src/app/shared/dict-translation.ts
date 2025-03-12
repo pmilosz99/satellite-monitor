@@ -26,6 +26,7 @@ export const dict: TLngDict = {
         searchSatellite: 'Search for a satellite',
         fetchErrorData: 'Data fetch error',
         new: 'new',
+        passes: 'Passes',
         //home-page
         homePageWelcome: 'Welcome to Satellite Monitor',
         homePageDisc: ` Satellite Monitor is a hobby project that enables the planning of night-time satellite observations. 
@@ -85,6 +86,17 @@ export const dict: TLngDict = {
         moreDetails: 'More details',
         numberOfSatellites: 'Number of satellites',
         all: 'All',
+        //passes
+        details: 'Details',
+        day: 'Day',
+        detailsFor: 'Details for',
+        onDay: 'on',
+        atTime: 'at',
+        forTheLocation: 'for the location',
+        passesFor: 'Passes for',
+        next: 'Next',
+        previous: 'Previous',
+        enterSat: 'Enter the satellite name...',
         //settings
         settings: 'Settings',
         settingsApp: 'Application settings',
@@ -109,6 +121,7 @@ export const dict: TLngDict = {
         devVersion: '· Wersja deweloperska',
         searchSatellite: 'Wyszukaj satelitę',
         new: 'nowe',
+        passes: 'Przeloty',
         //home-page
         homePageWelcome: 'Witaj na Satellite Monitor',
         homePageDisc: `Satellite Monitor jest to hobbistyczny projekt, który umożliwa planowanie nocnych obserwacji satelitów.
@@ -158,7 +171,7 @@ export const dict: TLngDict = {
         dropsBelow10: 'Schodzi poniżej 10°',
         sets: 'Zachodzi',
         satPosition: 'Pozycja satelity',
-        SatPasses: 'Przeloty satelity',
+        satPasses: 'Przeloty satelity',
         upcomingPasses: 'Najbliższe przeloty (24h)',
         //map2d
         satellite: 'Satelita',
@@ -168,6 +181,17 @@ export const dict: TLngDict = {
         moreDetails: 'Więcej szczegółów',
         numberOfSatellites: 'Ilość satelitów',
         all: 'Wszystkie',
+        //passes
+        details: 'Szczegóły',
+        day: 'Dzień',
+        detailsFor: 'Szczegóły dla',
+        onDay: 'W dniu',
+        atTime: 'godz.',
+        forTheLocation: 'dla lokalizacji',
+        passesFor: 'Przeloty dla',
+        next: 'Następny',
+        previous: 'Poprzedni',
+        enterSat: 'Podaj nazwę satelity...',
         //settings
         settings: 'Ustawienia',
         settingsApp: 'Ustawienia aplikacji',

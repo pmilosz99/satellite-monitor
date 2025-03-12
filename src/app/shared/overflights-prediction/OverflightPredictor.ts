@@ -7,12 +7,19 @@ import { SensorFactory } from "./SensorFactory ";
 export class OverflightPredictor {
     private satellite: Satellite;
     private durationSeconds: number;
+    private date: Date;
     private sensorAllSky: Sensor;
     private sensorAbove10: Sensor;
 
-    constructor(satellite: Satellite, durationSeconds: number, userLocation: IUserLocation) {
+    constructor(
+        satellite: Satellite, 
+        durationSeconds: number, 
+        userLocation: IUserLocation, 
+        date: Date = new Date()
+    ) {
         this.satellite = satellite;
         this.durationSeconds = durationSeconds;
+        this.date = date
         this.sensorAllSky = SensorFactory.createSensor(userLocation, 0 as Degrees);
         this.sensorAbove10 = SensorFactory.createSensor(userLocation, 10 as Degrees);
     }
@@ -21,7 +28,7 @@ export class OverflightPredictor {
         const overflights: IOverflight[] = [];
 
         let currentOverflightSession = new OverflightSession();
-        let currentTime = new Date();
+        let currentTime = this.date;
 
         for (let i = 0; i < this.durationSeconds; i++) {
             const isVisible = this.sensorAllSky.isSatInFov(this.satellite, currentTime);
