@@ -1,4 +1,4 @@
-export const getSatelliteTle = (tle: string, noradId: string) => {
+export const getSatelliteTle = (tle: string, noradId: string): string[] => {
     const lines = tle.split('\n');
 
     for(let i = 0; i < lines.length; i += 3) {
@@ -13,4 +13,5 @@ export const getSatelliteTle = (tle: string, noradId: string) => {
             return [line0.replace('\r', ''), line1.replace('\r', ''), line2.replace('\r', '')];
         }
     }
+    return [];
 };

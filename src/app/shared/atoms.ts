@@ -11,6 +11,7 @@ import { UseQueryResult } from "@tanstack/react-query";
 import { ISettingsValuesAtom, SETTINGS_VALUES } from "./types";
 
 export const coordinates = atom<Coordinate | null>(null);
+export const userHeight = atom<number | null>(null);
 
 export const language = atom<LANGUAGE_VALUES>(getLanguage());
 

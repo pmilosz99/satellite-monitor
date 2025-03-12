@@ -1,26 +1,23 @@
 import { FC } from "react";
-import { easeOut } from "ol/easing";
-import { transform } from "ol/proj";
-import { Coordinate } from "ol/coordinate";
 import { 
     Box, 
     Center, 
     Heading, 
+    Tab, 
+    TabList, 
+    TabPanel, 
+    TabPanels, 
+    Tabs, 
     Text 
 } from "@chakra-ui/react";
 
-import { DetailsBoxData } from "./details-box-data";
-import { DetailsBoxButtons } from "./details-box-buttons";
-import { NumberOrbitInput } from "./number-orbit-input";
-
-import { useMap } from "../../../../shared/hooks";
-
-import { ISatellitePosition } from "../../types";
-import { OL_DEFAULT_MAP_PROJECTION } from "../../../../shared/consts";
+import { UpcomingOverflights } from "./upcoming-overflights";
+import DetailsBoxPosition from "./details-box-position";
+import { T } from "../../../../shared/components";
 
 interface IDetailsBox {
     title: string;
-    positionSat: ISatellitePosition;
+    tle: string[];
     period: number;
     numberOfOrbits: number;
     isTrackSat: boolean;
@@ -31,7 +28,7 @@ interface IDetailsBox {
 
 export const DetailsBox: FC<IDetailsBox> = ({ 
     title, 
-    positionSat, 
+    tle, 
     period, 
     isTrackSat, 
     isMobile, 
@@ -39,34 +36,66 @@ export const DetailsBox: FC<IDetailsBox> = ({
     onNumberInputChange, 
     onTrack 
 }) => {
-    const map = useMap();
 
-    const onZoomIn = (): void => {
-        if (!map || !positionSat) return;
+    const renderMobileLayout = () => (
+        <Tabs isFitted>
+            <TabList>
+                <Tab>
+                    <T dictKey="satPosition" />
+                </Tab>
+                <Tab>
+                    <T dictKey="satPasses" />
+                </Tab>
+            </TabList>
+            <TabPanels>
+                <TabPanel>
+                    <DetailsBoxPosition 
+                        tle={tle} 
+                        period={period}
+                        numberOfOrbits={numberOfOrbits}
+                        isTrackSat={isTrackSat}
+                        onNumberInputChange={onNumberInputChange}
+                        onTrack={onTrack}
+                    />
+                </TabPanel>
+                <TabPanel p={0}>
+                    <UpcomingOverflights tle={tle} />
+                </TabPanel>
+            </TabPanels>
+        </Tabs>
+    )
 
-        const transformCoords = transform([positionSat.longtitude, positionSat.latitude], 'EPSG:4326', OL_DEFAULT_MAP_PROJECTION);
+    const renderFullWidthLayout = () => (
+        <>
+            <DetailsBoxPosition 
+                tle={tle} 
+                period={period}
+                numberOfOrbits={numberOfOrbits}
+                isTrackSat={isTrackSat}
+                onNumberInputChange={onNumberInputChange}
+                onTrack={onTrack}
+            />
+            <br /><br />
+            <UpcomingOverflights tle={tle} />
+        </>
+    )
 
-        map.getView().animate({
-            center: transformCoords as Coordinate,
-            zoom: 10,
-            easing: easeOut,
-        });
-    };
+    const renderContent = () => {
+        if (isMobile) return renderMobileLayout();
+
+        return renderFullWidthLayout();
+    }
 
     return (
-        <Box w={isMobile ? '100%' : '50%'} borderWidth="1px" borderRadius="6px" p={5}>
+        <Box w={isMobile ? '100%' : '50%'} borderWidth="1px" borderRadius="6px">
             <Center>
                 <Heading>
-                    <Text>{title}</Text>
+                    <Text p={isMobile ? 2 : 5}>{title}</Text>
                 </Heading>
             </Center>
             <Center>
-                <Box p={isMobile ? 1 : 5} w={isMobile ? '100%' : '80%'}>
-                    <DetailsBoxData positionSat={positionSat} period={period} />
-                    <br />
-                    <NumberOrbitInput numberOfOrbits={numberOfOrbits} satPeriod={period} onChange={onNumberInputChange}/>
-                    <br />
-                    <DetailsBoxButtons isTrackSat={isTrackSat} onZoom={onZoomIn} onTrack={onTrack}/>
+                <Box p={isMobile ? 0 : 0} w={isMobile ? '100%' : '80%'}> 
+                    {renderContent()}
                 </Box>
             </Center>
         </Box>

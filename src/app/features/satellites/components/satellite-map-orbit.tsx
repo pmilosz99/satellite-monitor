@@ -1,8 +1,9 @@
 import { FC, useEffect, useRef } from "react";
 import { useSetAtom } from "jotai";
+import { useParams } from "react-router-dom";
 import { Box } from "@chakra-ui/react";
 import Map from 'ol/Map';
-import Feature from "ol/Feature";
+import Feature, { FeatureLike } from "ol/Feature";
 import RenderEvent from "ol/render/Event";
 import VectorSource from "ol/source/Vector";
 import { Types } from "ol/MapBrowserEventType";
@@ -10,6 +11,7 @@ import { Vector } from "ol/layer";
 import { transform } from "ol/proj";
 import { Coordinate } from "ol/coordinate";
 import { LineString, Point } from "ol/geom";
+import { circular } from "ol/geom/Polygon";
 import { getVectorContext } from "ol/render";
 import { 
     Circle, 
@@ -18,26 +20,16 @@ import {
     Style 
 } from "ol/style";
 
-import { 
-    twoline2satrec, 
-    eciToGeodetic, 
-    propagate, 
-    gstime, 
-    degreesLong, 
-    degreesLat, 
-    EciVec3
-} from 'satellite.js';
-
 import { MapComponent } from "../../../shared/components";
 import { OLMAP_ID, OL_DEFAULT_MAP_PROJECTION } from "../../../shared/consts";
-import { Satellite, TleLine1, TleLine2 } from "ootk-core";
-import { removeLayerById } from "../../../shared/utils";
-import { ISatellitePosition } from "../types";
+import { getSatellitePosition, removeLayerById } from "../../../shared/utils";
 import { isDrawOrbitLayerLoading } from "../../../shared/atoms";
+import { ISatPosition } from "../../../shared/utils/getSatellitePosition";
+import { getRadiusToVisibleSat } from "../../../shared/overflights-prediction";
+import { useSatObject, useUserLocation } from "../../../shared/hooks";
 
 interface ISatelliteMapOrbit {
     tle: string[];
-    onSatPositionChange: (data: ISatellitePosition) => void;
     numberOfOrbits?: number;
     isTrackSat?: boolean;
     setTrackSatOff?: () => void;
@@ -56,42 +48,86 @@ const satelliteStyle = new Style({
 
 const SATELLITE_LAYER_NAME = 'satellite-point-layer';
 const ORBIT_LAYER_NAME = 'orbit-line-layer';
+const VISIBLE_SAT_AREA = 'visible-sat-area';
+
+const styleFunction = (feature: FeatureLike) => {
+    const type = feature.get('circleType');
+    
+    return new Style({
+        fill: new Fill({
+            color: type === 'fullCoverage' 
+                ? 'rgba(169, 169, 169, 0.2)' 
+                : 'rgba(169, 169, 169, 0)'
+        }),
+        stroke: new Stroke({
+            color: type === 'fullCoverage' 
+                ? 'rgba(141, 141, 141, 0.7)' 
+                : 'rgba(11, 136, 0, 0.733)',
+            width: type === 'fullCoverage' ? 2 : 1.5
+        })
+    });
+};
 
 export const SatelliteMapOrbit: FC<ISatelliteMapOrbit> = ({ 
     tle, 
-    onSatPositionChange, 
     setTrackSatOff, 
     numberOfOrbits = 1, 
     isTrackSat = false, 
 }) => {
     const mapRef = useRef<Map>();
-    const positionRef = useRef<ISatellitePosition>();
+    const positionRef = useRef<ISatPosition>();
     const workerCreateOrbitLanes = useRef<Worker>();
+    const userLocation = useUserLocation();
+    const { satelliteId } = useParams();
 
     const firstLineTle = tle[1];
     const secondLineTle = tle[2];
-    const sat = new Satellite({ tle1: firstLineTle as TleLine1, tle2: secondLineTle as TleLine2 });
+    
+    const sat = useSatObject(satelliteId || '');
 
     const setIsLoading = useSetAtom(isDrawOrbitLayerLoading);
 
-    const getSatellitePosition = (time: Date): ISatellitePosition => {
-        const satrec = twoline2satrec(firstLineTle, secondLineTle);
+    const addVisibleAreaLayer = () => {
+        if (!sat || !mapRef.current || !userLocation) return;
 
-        const positionAndVelocity = propagate(satrec, time);
-        const positionEci = positionAndVelocity.position as EciVec3<number>;
+        const map = mapRef.current
+
+        const radius0El = getRadiusToVisibleSat(sat.toGeodetic().alt, 0);
+        const radiusAbove10El = getRadiusToVisibleSat(sat.toGeodetic().alt, 10);
+
+        const wgs84Circle0El = circular(userLocation.coordinates, radius0El * 1000, 128);
+        const mercatorCircle0El = wgs84Circle0El.transform('EPSG:4326', 'EPSG:3857');
+
+        const wgs84Circle10El = circular(userLocation.coordinates, radiusAbove10El * 1000, 128);
+        const mercatorCircle10El = wgs84Circle10El.transform('EPSG:4326', 'EPSG:3857');
         
-        const gmst = gstime(time);
-        const positionGd = eciToGeodetic(positionEci, gmst);
+        removeLayerById(map, VISIBLE_SAT_AREA);
 
-        const longtitude = degreesLong(positionGd.longitude);
-        const latitude = degreesLat(positionGd.latitude);
-        const height = positionGd.height;
+        const feature0El = new Feature({
+            geometry: mercatorCircle0El,
+            circleType: 'fullCoverage',
+        });
 
-        return { longtitude, latitude, height };
-    };
+        const feature10El = new Feature({
+            geometry: mercatorCircle10El,
+            circleType: 'optimalCoverage',
+        });
+
+        const vectorSource = new VectorSource({
+            features: [feature0El, feature10El],
+        });
+
+        const vectorLayer = new Vector({
+            [OLMAP_ID]: VISIBLE_SAT_AREA,
+            source: vectorSource,
+            style: styleFunction ,
+        });
+
+        map.getLayers().insertAt(1, vectorLayer);
+    }
 
     const drawOrbitLayer = (): void => {
-        if (!mapRef.current || !tle || !workerCreateOrbitLanes.current) return;
+        if (!mapRef.current || !tle || !workerCreateOrbitLanes.current || !sat) return;
 
         const map = mapRef.current;
 
@@ -170,7 +206,7 @@ export const SatelliteMapOrbit: FC<ISatelliteMapOrbit> = ({
     const zoomIn = () => {
         if (!mapRef.current || !positionRef.current) return;
 
-        const transformCoords = transform([positionRef.current.longtitude, positionRef.current.latitude], 'EPSG:4326', OL_DEFAULT_MAP_PROJECTION);
+        const transformCoords = transform([positionRef.current.longitude, positionRef.current.latitude], 'EPSG:4326', OL_DEFAULT_MAP_PROJECTION);
 
         isTrackSat ? mapRef.current.getView().animate({center: transformCoords, zoom: 9}) : null;
     };
@@ -178,8 +214,8 @@ export const SatelliteMapOrbit: FC<ISatelliteMapOrbit> = ({
     const updateSatellitePosition = (event: RenderEvent): void => {
         if (!mapRef.current || !tle) return;
 
-        const position = getSatellitePosition(new Date());
-        const transformCoords = transform([position.longtitude, position.latitude], 'EPSG:4326', OL_DEFAULT_MAP_PROJECTION);
+        const position = getSatellitePosition(new Date(), firstLineTle, secondLineTle);
+        const transformCoords = transform([position.longitude, position.latitude], 'EPSG:4326', OL_DEFAULT_MAP_PROJECTION);
 
         positionRef.current = position;
 
@@ -199,14 +235,6 @@ export const SatelliteMapOrbit: FC<ISatelliteMapOrbit> = ({
         mapRef.current.render(); //We force the map rendering to be looped through the render function and postrender listener
     };
 
-    const updatePositionState = (): (() => void) => {
-        const interval = setInterval(() => {
-            onSatPositionChange(positionRef.current as ISatellitePosition);
-        }, 1000);
-
-        return () => clearInterval(interval);
-    };
-
     const handleWebWorker = () => {
         workerCreateOrbitLanes.current = new Worker(new URL('../../../shared/worker/create-orbit-lanes.ts', import.meta.url), { type: "module" });
 
@@ -218,13 +246,12 @@ export const SatelliteMapOrbit: FC<ISatelliteMapOrbit> = ({
     useEffect(drawOrbitLayer, [tle, numberOfOrbits]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(drawSatelliteLayer, [tle, isTrackSat]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    useEffect(updatePositionState, [tle]);
     useEffect(zoomIn, [isTrackSat]);
     useEffect(disabledTracker, [setTrackSatOff]);
+    useEffect(addVisibleAreaLayer, [sat, userLocation]);
 
     return (
-        <Box h="100%" w="100%" borderWidth="1px">
+        <Box h="100%" minH="30vh" w="100%" borderWidth="1px">
             <MapComponent id="map-satellite-details-orbit" mapRef={mapRef} />
         </Box>
     );

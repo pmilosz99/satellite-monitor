@@ -3,10 +3,10 @@ import { Flex, Spacer, Text } from "@chakra-ui/react";
 
 import { T } from "../../../../shared/components";
 
-import { ISatellitePosition } from "../../types";
+import { ISatPosition } from "../../../../shared/utils/getSatellitePosition";
 
 interface IDetailsBoxData {
-    positionSat: ISatellitePosition;
+    positionSat: ISatPosition;
     period: number;
 }
 
@@ -17,7 +17,7 @@ export const DetailsBoxData: FC<IDetailsBoxData> = ({ positionSat, period }) => 
                 <T dictKey="longtitude" />:
             </Text>
             <Spacer />
-            <Text>{positionSat.longtitude.toFixed(4)}</Text>
+            <Text>{positionSat.longitude.toFixed(4)}</Text>
         </Flex>
         <Flex>
             <Text>

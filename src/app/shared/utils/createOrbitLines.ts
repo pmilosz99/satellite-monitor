@@ -19,8 +19,8 @@ export const createOrbitLanes = (period: number, firstLine: string, secondLine: 
     const PERIOD_VALUE = computePeriod(period);
 
     for(let i=0; i < PERIOD_VALUE; i++) {
-        const { longtitude, latitude } = getSatellitePosition(currentTime, firstLine, secondLine);//create points (sat position)
-        const transformCoords = transform([longtitude, latitude], 'EPSG:4326', OL_DEFAULT_MAP_PROJECTION);
+        const { longitude, latitude } = getSatellitePosition(currentTime, firstLine, secondLine);//create points (sat position)
+        const transformCoords = transform([longitude, latitude], 'EPSG:4326', OL_DEFAULT_MAP_PROJECTION);
 
         currentTime = new Date(new Date().setSeconds(new Date().getSeconds() + i)); //adding 1 sec to the time needed to calculate the sat position
 

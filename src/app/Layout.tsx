@@ -57,6 +57,7 @@ import { routes } from "./shared/routes";
 import StorageIcon from '@mui/icons-material/Storage';
 import MapIcon from '@mui/icons-material/Map';
 import SettingsIcon from '@mui/icons-material/Settings';
+import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
 import { MAIN_GRADIENT, MAIN_GRADIENT_COLOR, THEME_TYPE } from "./shared/themes";
 import { useJsonTle, useMap, useTranslation } from "./shared/hooks";
 import { ChevronDownIcon, HamburgerIcon, MoonIcon, SearchIcon, SunIcon } from "@chakra-ui/icons";
@@ -456,9 +457,9 @@ interface ITitleSection extends StackProps {
     underline?: boolean;
 }
 
-const TitleSection: FC<ITitleSection> = ({ id, Icon, title, route, onClick, underline }) => {
+const TitleSection: FC<ITitleSection> = ({ id, Icon, title, route, onClick, underline, ...rest }) => {
     return (
-        <Stack key={id} direction="row" alignItems="center">
+        <Stack key={id} direction="row" alignItems="center" {...rest}>
             <Icon fontSize="small"/>
             {
                 route ? (
@@ -525,6 +526,11 @@ const MENU_ITEMS: ISection[] = [
         route: routes.map,
     },
     {
+        title: 'passes',
+        icon: SettingsBackupRestoreIcon,
+        route: routes.passes.path,
+    },
+    {
         title: 'settings',
         icon: SettingsIcon,
         route: routes.settings,
@@ -536,7 +542,7 @@ const renderMenu = () => {
     return MENU_ITEMS.map((section, index) => (
         <Fragment key={`${section.title}-${index}`}>
             { section.isAlignBottom ? <Spacer /> : null }
-            <TitleSection id={`${section.title}`} Icon={section.icon} title={section.title} route={section.route} />
+            <TitleSection id={`${section.title}`} Icon={section.icon} title={section.title} route={section.route} mb={1} />
             {
                 section.children ? (
                     <Flex pl={7} flexDir="column">
