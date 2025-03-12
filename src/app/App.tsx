@@ -27,7 +27,8 @@ import { LANGUAGE_VALUES } from "./shared/dict-translation";
 
 import { useSatellites } from "./features/satellites/data-access";
 import { Settings } from "./features/settings/containers";
-import { PassesContainer } from "./features/upcoming-passes/containers";
+import { PassesContainer, PassesList } from "./features/upcoming-passes/containers";
+import { PassesDetails } from "./features/upcoming-passes/containers/passes-details";
 
 const router = createBrowserRouter([
   {
@@ -71,8 +72,16 @@ const router = createBrowserRouter([
         element: <Map2d />
       },
       {
-        path: routes.upcomingPasses,
+        path: routes.passes.path,
         element: <PassesContainer />,
+      },
+      {
+        path: routes.passes.satellite.path,
+        element: <PassesList />,
+      },
+      {
+        path: routes.passes.satellite.details.path,
+        element: <PassesDetails />,
       },
       {
         path: routes.settings,

@@ -1,8 +1,9 @@
 import { FC, useEffect, useRef } from "react";
 import { useSetAtom } from "jotai";
+import { useParams } from "react-router-dom";
 import { Box } from "@chakra-ui/react";
 import Map from 'ol/Map';
-import Feature from "ol/Feature";
+import Feature, { FeatureLike } from "ol/Feature";
 import RenderEvent from "ol/render/Event";
 import VectorSource from "ol/source/Vector";
 import { Types } from "ol/MapBrowserEventType";
@@ -10,6 +11,7 @@ import { Vector } from "ol/layer";
 import { transform } from "ol/proj";
 import { Coordinate } from "ol/coordinate";
 import { LineString, Point } from "ol/geom";
+import { circular } from "ol/geom/Polygon";
 import { getVectorContext } from "ol/render";
 import { 
     Circle, 
@@ -20,10 +22,11 @@ import {
 
 import { MapComponent } from "../../../shared/components";
 import { OLMAP_ID, OL_DEFAULT_MAP_PROJECTION } from "../../../shared/consts";
-import { Satellite, TleLine1, TleLine2 } from "ootk-core";
 import { getSatellitePosition, removeLayerById } from "../../../shared/utils";
 import { isDrawOrbitLayerLoading } from "../../../shared/atoms";
 import { ISatPosition } from "../../../shared/utils/getSatellitePosition";
+import { getRadiusToVisibleSat } from "../../../shared/overflights-prediction";
+import { useSatObject, useUserLocation } from "../../../shared/hooks";
 
 interface ISatelliteMapOrbit {
     tle: string[];
@@ -45,6 +48,25 @@ const satelliteStyle = new Style({
 
 const SATELLITE_LAYER_NAME = 'satellite-point-layer';
 const ORBIT_LAYER_NAME = 'orbit-line-layer';
+const VISIBLE_SAT_AREA = 'visible-sat-area';
+
+const styleFunction = (feature: FeatureLike) => {
+    const type = feature.get('circleType');
+    
+    return new Style({
+        fill: new Fill({
+            color: type === 'fullCoverage' 
+                ? 'rgba(169, 169, 169, 0.2)' 
+                : 'rgba(169, 169, 169, 0)'
+        }),
+        stroke: new Stroke({
+            color: type === 'fullCoverage' 
+                ? 'rgba(141, 141, 141, 0.7)' 
+                : 'rgba(11, 136, 0, 0.733)',
+            width: type === 'fullCoverage' ? 2 : 1.5
+        })
+    });
+};
 
 export const SatelliteMapOrbit: FC<ISatelliteMapOrbit> = ({ 
     tle, 
@@ -55,15 +77,57 @@ export const SatelliteMapOrbit: FC<ISatelliteMapOrbit> = ({
     const mapRef = useRef<Map>();
     const positionRef = useRef<ISatPosition>();
     const workerCreateOrbitLanes = useRef<Worker>();
+    const userLocation = useUserLocation();
+    const { satelliteId } = useParams();
 
     const firstLineTle = tle[1];
     const secondLineTle = tle[2];
-    const sat = new Satellite({ tle1: firstLineTle as TleLine1, tle2: secondLineTle as TleLine2 });
+    
+    const sat = useSatObject(satelliteId || '');
 
     const setIsLoading = useSetAtom(isDrawOrbitLayerLoading);
 
+    const addVisibleAreaLayer = () => {
+        if (!sat || !mapRef.current || !userLocation) return;
+
+        const map = mapRef.current
+
+        const radius0El = getRadiusToVisibleSat(sat.toGeodetic().alt, 0);
+        const radiusAbove10El = getRadiusToVisibleSat(sat.toGeodetic().alt, 10);
+
+        const wgs84Circle0El = circular(userLocation.coordinates, radius0El * 1000, 128);
+        const mercatorCircle0El = wgs84Circle0El.transform('EPSG:4326', 'EPSG:3857');
+
+        const wgs84Circle10El = circular(userLocation.coordinates, radiusAbove10El * 1000, 128);
+        const mercatorCircle10El = wgs84Circle10El.transform('EPSG:4326', 'EPSG:3857');
+        
+        removeLayerById(map, VISIBLE_SAT_AREA);
+
+        const feature0El = new Feature({
+            geometry: mercatorCircle0El,
+            circleType: 'fullCoverage',
+        });
+
+        const feature10El = new Feature({
+            geometry: mercatorCircle10El,
+            circleType: 'optimalCoverage',
+        });
+
+        const vectorSource = new VectorSource({
+            features: [feature0El, feature10El],
+        });
+
+        const vectorLayer = new Vector({
+            [OLMAP_ID]: VISIBLE_SAT_AREA,
+            source: vectorSource,
+            style: styleFunction ,
+        });
+
+        map.getLayers().insertAt(1, vectorLayer);
+    }
+
     const drawOrbitLayer = (): void => {
-        if (!mapRef.current || !tle || !workerCreateOrbitLanes.current) return;
+        if (!mapRef.current || !tle || !workerCreateOrbitLanes.current || !sat) return;
 
         const map = mapRef.current;
 
@@ -184,6 +248,7 @@ export const SatelliteMapOrbit: FC<ISatelliteMapOrbit> = ({
     useEffect(drawSatelliteLayer, [tle, isTrackSat]);
     useEffect(zoomIn, [isTrackSat]);
     useEffect(disabledTracker, [setTrackSatOff]);
+    useEffect(addVisibleAreaLayer, [sat, userLocation]);
 
     return (
         <Box h="100%" minH="30vh" w="100%" borderWidth="1px">

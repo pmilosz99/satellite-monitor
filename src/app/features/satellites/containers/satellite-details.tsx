@@ -45,7 +45,7 @@ export const SatelliteDetails = () => {
         </Flex>
     )
 
-    if (!singleTle) return (
+    if (!singleTle.length) return (
         <Flex alignItems='center' direction='column' h="100%" justifyContent="center">
             <Heading>
                 <T dictKey="notFoundSat" />

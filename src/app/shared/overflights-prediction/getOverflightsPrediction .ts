@@ -6,8 +6,9 @@ import { IOverflight } from "./model";
 export const getOverflightsPrediction = (
     sat: Satellite,
     durationSeconds: number,
-    userLocation: IUserLocation
+    userLocation: IUserLocation,
+    date: Date = new Date(),
 ): IOverflight[] => {
-    const predictor = new OverflightPredictor(sat, durationSeconds, userLocation);
+    const predictor = new OverflightPredictor(sat, durationSeconds, userLocation, date);
     return predictor.getOverflights();
 };

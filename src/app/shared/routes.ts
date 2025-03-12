@@ -18,5 +18,15 @@ export const routes = {
     satellitesAbove: 'satellites-above',
     map: 'map',
     settings: 'settings',
-    upcomingPasses: 'upcoming-passes',
-};
+    passes: {
+        path: 'passes',
+        satellite: {
+            path: '/passes/:satelliteId',
+            goTo: (satelliteId: string) => '/passes/:satelliteId'.replace(':satelliteId', satelliteId),
+            details: {
+                path: '/passes/:satelliteId/details',
+                goTo: (satelliteId: string) => '/passes/:satelliteId/details'.replace(':satelliteId', satelliteId),
+            }
+        }
+    }
+}; 

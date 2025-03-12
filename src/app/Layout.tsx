@@ -528,7 +528,7 @@ const MENU_ITEMS: ISection[] = [
     {
         title: 'passes',
         icon: SettingsBackupRestoreIcon,
-        route: routes.upcomingPasses,
+        route: routes.passes.path,
     },
     {
         title: 'settings',

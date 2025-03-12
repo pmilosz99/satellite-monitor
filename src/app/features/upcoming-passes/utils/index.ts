@@ -1,0 +1,1 @@
+export { coordinatesToDM } from './coordinatesToDM';
